@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scouting Sprocket — Data Actions</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --sidebar-width: 250px;
+            --background: #d4ceb1;
+            --sidebar: #ba8a43;
+            --surface: #f1e4c4;
+            --surface-raised: #fdf6e3;
+            --outline: #fdf6e3;
+            --line: rgba(63, 69, 52, .18);
+            --text: #ba8a43;
+            --muted: #3f4534;
+            --accent: #380372;
+            --accent-soft: rgba(56, 3, 114, .1);
+            --danger: #8d2929;
+            --shadow: 0 1px 2px rgba(63, 69, 52, .12), 0 4px 14px rgba(63, 69, 52, .08);
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-width: 320px;
+            min-height: 100vh;
+            background: var(--background);
+            color: var(--muted);
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+        }
+        button, input, select { font: inherit; }
+        button {
+            min-height: 42px;
+            padding: 9px 16px;
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            background: var(--accent);
+            color: var(--surface-raised);
+            font-weight: 700;
+            cursor: pointer;
+        }
+        button:hover { filter: brightness(1.15); }
+        button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+        input, select {
+            width: 100%;
+            min-height: 42px;
+            padding: 9px 10px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--surface-raised);
+            color: var(--muted);
+        }
+        .layout { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: var(--sidebar-width);
+            flex-shrink: 0;
+            padding: 28px 16px;
+            background: var(--sidebar);
+            border-right: 1px solid var(--outline);
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            align-self: flex-start;
+        }
+        .brand {
+            display: block;
+            margin: 0 12px 32px;
+            color: var(--surface);
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: .04em;
+            text-decoration: none;
+        }
+        .brand span {
+            display: block;
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: .72rem;
+            font-weight: 400;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+        .nav-list { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+        .nav-link {
+            display: block;
+            padding: 12px 14px;
+            border-radius: 8px;
+            color: var(--muted);
+            text-decoration: none;
+        }
+        .nav-link:hover, .nav-link:focus-visible, .nav-link.active {
+            background: var(--surface);
+            color: var(--accent);
+            outline: none;
+        }
+        .nav-link.active { box-shadow: inset 3px 0 var(--accent); font-weight: 700; }
+        .content { flex: 1; min-width: 0; padding: 36px 40px 56px; }
+        .workspace { max-width: 1240px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+
+        /* Page header */
+        .page-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px; }
+        h1 { margin: 0 0 4px; color: var(--muted); font-size: 1.75rem; letter-spacing: -.01em; }
+        h2 { margin: 0; color: var(--muted); font-size: 1.05rem; }
+        .intro, .help { margin: 0; color: var(--muted); opacity: .8; font-size: .9rem; }
+        .meta-chip {
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            font-size: .82rem;
+            font-weight: 700;
+        }
+
+        /* Status toast (visible wherever you are on the page) */
+        .status {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 10;
+            max-width: 360px;
+            padding: 12px 16px;
+            border-left: 4px solid var(--accent);
+            border-radius: 8px;
+            background: var(--surface-raised);
+            box-shadow: var(--shadow);
+            color: var(--muted);
+            font-size: .9rem;
+        }
+        .status:empty { display: none; }
+
+        /* Panels, ordered like a dashboard: filters → KPIs/charts → records → setup */
+        .panel {
+            margin: 0;
+            padding: clamp(16px, 2.4vw, 24px);
+            border: 1px solid var(--outline);
+            border-radius: 14px;
+            background: var(--surface);
+            box-shadow: var(--shadow);
+        }
+        .panel-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 16px; }
+        #filterPanel { order: 1; }
+        #summaryPanel { order: 2; }
+        #recordsPanel { order: 3; }
+        #configPanel { order: 4; }
+        .field-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+        label { display: block; margin-bottom: 6px; color: var(--muted); font-weight: 700; font-size: .88rem; }
+        .choice { display: flex; align-items: center; gap: 6px; margin: 0; font-weight: 400; }
+        .choice input { width: auto; min-height: auto; accent-color: var(--accent); }
+
+        /* Collapsible setup */
+        #configPanel summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        #configPanel summary::-webkit-details-marker { display: none; }
+        #configPanel summary::after { content: "Show"; color: var(--accent); font-weight: 700; font-size: .85rem; }
+        #configPanel[open] summary::after { content: "Hide"; }
+        #configPanel[open] summary { margin-bottom: 12px; }
+        .configuration { display: grid; gap: 0; margin-top: 12px; }
+        .config-row {
+            display: grid;
+            grid-template-columns: minmax(180px, 1fr) 150px 130px 2fr;
+            gap: 10px;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid var(--line);
+        }
+        .config-row:last-child { border-bottom: 0; }
+        .config-prompt { color: var(--muted); font-weight: 700; }
+        .config-label {
+            margin: 0 0 4px;
+            font-size: .75rem;
+            font-weight: 400;
+            text-transform: uppercase;
+        }
+
+        /* Tables */
+        .table-wrap { overflow: auto; max-height: 460px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-raised); }
+        table { width: 100%; border-collapse: collapse; color: var(--muted); font-size: .9rem; }
+        th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+        th { position: sticky; top: 0; background: var(--surface-raised); box-shadow: 0 1px 0 var(--line); font-size: .82rem; }
+        tbody tr:nth-child(even), tr:nth-child(even) td { background: rgba(241, 228, 196, .45); }
+        tr:hover td { background: var(--accent-soft); }
+        td.num { font-variant-numeric: tabular-nums; }
+        .empty { padding: 24px; color: var(--muted); opacity: .75; text-align: center; }
+
+        /* KPI cards */
+        .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 18px; }
+        .kpi {
+            padding: 16px 18px;
+            border: 1px solid var(--outline);
+            border-top: 4px solid var(--accent);
+            border-radius: 10px;
+            background: var(--surface-raised);
+        }
+        .kpi strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--accent); font-size: 1.8rem; line-height: 1.2; font-variant-numeric: tabular-nums; }
+        .kpi span { color: var(--muted); font-size: .82rem; }
+
+        /* Charts */
+        #summary { margin-bottom: 18px; }
+        .chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 18px; }
+        .chart-panel { min-width: 0; padding: 16px; border: 1px solid var(--outline); border-radius: 10px; background: var(--surface-raised); }
+        .chart-panel h3 { margin: 0 0 12px; color: var(--muted); font-size: .95rem; }
+        .chart {
+            display: flex;
+            align-items: end;
+            gap: 10px;
+            height: 230px;
+            padding: 8px 8px 0;
+            border-bottom: 1px solid var(--muted);
+            background: repeating-linear-gradient(to top, transparent 0, transparent 49px, var(--line) 49px, var(--line) 50px);
+            overflow-x: auto;
+        }
+        .chart:empty::after { content: "No data to chart."; margin: auto; color: var(--muted); opacity: .6; font-size: .85rem; }
+        .bar { display: flex; flex: 1; min-width: 38px; flex-direction: column; justify-content: end; align-items: center; gap: 4px; height: 100%; }
+        .bar-value { font-size: .75rem; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+        .bar-fill {
+            width: 100%;
+            max-width: 56px;
+            min-height: 2px;
+            border-radius: 6px 6px 0 0;
+            background: linear-gradient(to top, var(--accent), #6a2fb0);
+            transition: height .4s ease;
+        }
+        .bar:hover .bar-fill { filter: brightness(1.2); }
+        .bar-label { max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .75rem; padding-top: 6px; }
+        .chart-labels { display: none; }
+        .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+
+        @media (prefers-reduced-motion: reduce) { .bar-fill { transition: none; } }
+        @media (max-width: 900px) { .sidebar { position: static; height: auto; } }
+        @media (max-width: 640px) {
+            .layout { display: block; }
+            .sidebar { width: 100%; padding: 20px 16px; border-right: 0; border-bottom: 1px solid var(--outline); }
+            .brand { margin-bottom: 18px; }
+            .nav-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .content { padding: 24px 16px 48px; }
+            .config-row { grid-template-columns: 1fr; }
+            .chart-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <a class="brand" href="/">Scouting Sprocket<span>Admin View</span></a>
+            <nav aria-label="Main navigation">
+                <ul class="nav-list">
+                    <li><a class="nav-link" href="/">Dashboard</a></li>
+                    <li><a class="nav-link" href="/Forms.html">Forms</a></li>
+                    <li><a class="nav-link" href="/Builder.html">Builder</a></li>
+                    <li><a class="nav-link" href="/Export.html">Export</a></li>
+                    <li><a class="nav-link" href="/Import.html">Import</a></li>
+                    <li><a class="nav-link active" href="/Data_actions.html" aria-current="page">Data Actions</a></li>
+                    <li><a class="nav-link" href="/Settings.html">Settings</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="content">
+            <div class="workspace">
+                <header class="page-head">
+                    <div>
+                        <h1 id="title">Data Actions</h1>
+                        <p class="intro">Configure fields, inspect saved scouting records, and analyze team or match metrics.</p>
+                    </div>
+                    <span id="formMeta" class="meta-chip" hidden></span>
+                </header>
+                <p id="status" class="status" role="status" aria-live="polite"></p>
+
+                <section class="panel" id="filterPanel">
+                    <div class="panel-head"><h2>Record filters</h2></div>
+                    <p class="help">Primary filters are populated from available saved values.</p>
+                    <div id="filters" class="field-grid"></div>
+                </section>
+
+                <section class="panel" id="summaryPanel">
+                    <div class="panel-head"><h2>Metric summary</h2></div>
+                    <div id="kpis" class="kpis"></div>
+                    <div class="chart-grid">
+                        <div class="chart-panel">
+                            <h3>Top 10 metrics by average</h3>
+                            <div id="metricChart" class="chart"></div>
+                        </div>
+                        <div class="chart-panel">
+                            <h3>Top 10 values for the first numeric metric</h3>
+                            <div id="valueChart" class="chart"></div>
+                        </div>
+                    </div>
+                    <div class="panel-head" style="margin-top:18px"><h2>Metric statistics</h2></div>
+                    <div id="summary" class="table-wrap"></div>
+                </section>
+
+                <section class="panel" id="recordsPanel">
+                    <div class="panel-head"><h2>Saved records</h2><span id="recordCount" class="help"></span></div>
+                    <div id="records" class="table-wrap"></div>
+                </section>
+
+                <details class="panel" id="configPanel" open>
+                    <summary><h2>Field visibility and lookup roles</h2></summary>
+                    <p class="help">Role controls lookup behavior. Visibility controls whether a field appears in records and charts.</p>
+                    <div class="config-row">
+                        <strong>Field</strong><strong>Role</strong><strong>Visibility</strong><strong>Type</strong>
+                    </div>
+                    <div id="configuration" class="configuration"></div>
+                    <div class="actions"><button id="saveConfig" type="button">Save data actions</button></div>
+                </details>
+            </div>
+        </main>
+    </div>
+    <script>
+        const status = document.getElementById("status");
+        const configuration = document.getElementById("configuration");
+        const filtersHost = document.getElementById("filters");
+        const recordsHost = document.getElementById("records");
+        const summaryHost = document.getElementById("summary");
+        const kpisHost = document.getElementById("kpis");
+        const metricChartHost = document.getElementById("metricChart");
+        const valueChartHost = document.getElementById("valueChart");
+        const recordCount = document.getElementById("recordCount");
+        let token;
+        let elements = [];
+        let records = [];
+        let modes = {};
+        let hidden = {};
+
+        const setStatus = (message, error = false) => {
+            status.textContent = message;
+            status.style.borderLeftColor = error ? "var(--danger)" : "";
+            status.style.color = error ? "var(--danger)" : "";
+        };
+        const keyFor = (sectionIndex, elementIndex) => `${sectionIndex}-${elementIndex}`;
+        const flattenElements = form => form.sections.flatMap((section, sectionIndex) =>
+            section.elements.map((element, elementIndex) => ({
+                ...element,
+                key: keyFor(sectionIndex, elementIndex),
+                section: section.title
+            })));
+        const valueFor = (record, key) => record?.values?.[key];
+        const textValue = value => Array.isArray(value)
+            ? value.join(", ")
+            : value && typeof value === "object"
+                ? Object.entries(value).map(([key, item]) => `${key}: ${Array.isArray(item) ? item.join(", ") : item}`).join("; ")
+                : value ?? "";
+        const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(2);
+        const addKpi = (value, label) => {
+            const kpi = document.createElement("div");
+            kpi.className = "kpi";
+            const strong = document.createElement("strong");
+            strong.textContent = value;
+            strong.title = String(value);
+            const span = document.createElement("span");
+            span.textContent = label;
+            kpi.append(strong, span);
+            kpisHost.append(kpi);
+        };
+        const addBar = (host, label, value, display, tip) => {
+            const bar = document.createElement("div");
+            bar.className = "bar";
+            const num = document.createElement("span");
+            num.className = "bar-value";
+            num.textContent = display;
+            const fill = document.createElement("div");
+            fill.className = "bar-fill";
+            fill.style.height = `${Math.max(2, value * 150)}px`;
+            fill.title = tip;
+            const text = document.createElement("span");
+            text.className = "bar-label";
+            text.textContent = label;
+            text.title = label;
+            bar.append(num, fill, text);
+            host.append(bar);
+        };
+
+        function renderConfiguration() {
+            configuration.replaceChildren();
+            elements.forEach(element => {
+                const row = document.createElement("div");
+                row.className = "config-row";
+                const prompt = document.createElement("div");
+                prompt.className = "config-prompt";
+                prompt.textContent = `${element.section}: ${element.prompt}`;
+                const roleCell = document.createElement("div");
+                const select = document.createElement("select");
+                ["NULL", "None", "Primary"].forEach(mode => {
+                    const option = document.createElement("option");
+                    option.value = mode;
+                    option.textContent = mode;
+                    option.selected = (modes[element.key] || "NULL") === mode;
+                    select.append(option);
+                });
+                select.addEventListener("change", () => {
+                    modes[element.key] = select.value;
+                    renderFilters();
+                    renderRecords();
+                    renderSummary();
+                });
+                const roleLabel = document.createElement("span");
+                roleLabel.className = "config-label";
+                roleLabel.textContent = "Role";
+                roleCell.append(roleLabel, select);
+
+                const visibilityCell = document.createElement("div");
+                const visibilityLabel = document.createElement("span");
+                visibilityLabel.className = "config-label";
+                visibilityLabel.textContent = "Visibility";
+                const visibility = document.createElement("select");
+                [["show", "Show"], ["hide", "Hide"]].forEach(([value, label]) => {
+                    const option = document.createElement("option");
+                    option.value = value;
+                    option.textContent = label;
+                    option.selected = hidden[element.key] ? value === "hide" : value === "show";
+                    visibility.append(option);
+                });
+                visibility.addEventListener("change", () => {
+                    hidden[element.key] = visibility.value === "hide";
+                    renderRecords();
+                    renderSummary();
+                });
+                visibilityCell.append(visibilityLabel, visibility);
+                const type = document.createElement("span");
+                type.className = "help";
+                type.textContent = `${element.type} · ${element.dataType}`;
+                row.append(prompt, roleCell, visibilityCell, type);
+                configuration.append(row);
+            });
+        }
+
+        function renderFilters() {
+            filtersHost.replaceChildren();
+            const primaryElements = elements.filter(element => modes[element.key] === "Primary");
+            if (!primaryElements.length) {
+                filtersHost.textContent = "Mark one or more fields as Primary to create lookup filters.";
+                return;
+            }
+            primaryElements.forEach(element => {
+                const wrapper = document.createElement("div");
+                const label = document.createElement("label");
+                const input = document.createElement("select");
+                input.id = `filter-${element.key}`;
+                label.htmlFor = input.id;
+                label.textContent = element.prompt;
+                const all = document.createElement("option");
+                all.value = "";
+                all.textContent = "All available values";
+                input.append(all);
+                const values = [...new Set(records
+                    .map(record => textValue(valueFor(record, element.key)))
+                    .filter(Boolean))]
+                    .sort((a, b) => a.localeCompare(b));
+                values.forEach(value => {
+                    const option = document.createElement("option");
+                    option.value = value;
+                    option.textContent = value;
+                    input.append(option);
+                });
+                input.addEventListener("input", () => {
+                    renderRecords();
+                    renderSummary();
+                });
+                wrapper.append(label, input);
+                filtersHost.append(wrapper);
+            });
+        }
+
+        function filteredRecords() {
+            const primaryKeys = elements.filter(element => modes[element.key] === "Primary").map(element => element.key);
+            return records.filter(record => {
+                return primaryKeys.every(key => {
+                    const input = document.getElementById(`filter-${key}`);
+                    const filter = input?.value.trim().toLowerCase() || "";
+                    return !filter ||
+                        String(valueFor(record, key) ?? "").toLowerCase().includes(filter);
+                });
+            });
+        }
+
+        function renderRecords() {
+            const visible = elements.filter(element =>
+                modes[element.key] !== "None" && !hidden[element.key]);
+            const current = filteredRecords();
+            recordCount.textContent = `${current.length} of ${records.length} records`;
+            if (!current.length) {
+                const empty = document.createElement("div");
+                empty.className = "empty";
+                empty.textContent = "No saved records match the current filters.";
+                recordsHost.replaceChildren(empty);
+                return;
+            }
+            const table = document.createElement("table");
+            const head = document.createElement("tr");
+            ["Submitted", ...visible.map(element => element.prompt)].forEach(label => {
+                const cell = document.createElement("th");
+                cell.textContent = label;
+                head.append(cell);
+            });
+            table.append(head);
+            current.forEach(record => {
+                const row = document.createElement("tr");
+                const submitted = document.createElement("td");
+                submitted.textContent = record.submittedAt ? new Date(record.submittedAt).toLocaleString() : "";
+                row.append(submitted);
+                visible.forEach(element => {
+                    const cell = document.createElement("td");
+                    cell.textContent = textValue(valueFor(record, element.key));
+                    if (element.dataType === "number") cell.className = "num";
+                    row.append(cell);
+                });
+                table.append(row);
+            });
+            recordsHost.replaceChildren(table);
+        }
+
+        function renderSummary() {
+            const numeric = elements.filter(element => modes[element.key] !== "None" && !hidden[element.key] && element.dataType === "number");
+            const current = filteredRecords();
+            summaryHost.replaceChildren();
+            kpisHost.replaceChildren();
+            metricChartHost.replaceChildren();
+            valueChartHost.replaceChildren();
+            addKpi(current.length, `matching records (of ${records.length})`);
+            addKpi(numeric.length, "numeric metrics tracked");
+            if (!numeric.length || !current.length) {
+                const empty = document.createElement("div");
+                empty.className = "empty";
+                empty.textContent = "No numeric records are available for the current filters.";
+                summaryHost.replaceChildren(empty);
+                return;
+            }
+            const table = document.createElement("table");
+            const head = document.createElement("tr");
+            ["Metric", "Count", "Average", "Minimum", "Maximum"].forEach(label => {
+                const cell = document.createElement("th");
+                cell.textContent = label;
+                head.append(cell);
+            });
+            table.append(head);
+            numeric.forEach(element => {
+                const values = current.map(record => Number(valueFor(record, element.key))).filter(Number.isFinite);
+                if (!values.length) return;
+                const row = document.createElement("tr");
+                [element.prompt, values.length, (values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(2), Math.min(...values), Math.max(...values)].forEach((value, index) => {
+                    const cell = document.createElement("td");
+                    cell.textContent = String(value);
+                    if (index) cell.className = "num";
+                    row.append(cell);
+                });
+                table.append(row);
+            });
+            summaryHost.append(table);
+            const metricStats = numeric.map(element => {
+                const values = current.map(record => Number(valueFor(record, element.key))).filter(Number.isFinite);
+                return {
+                    element,
+                    average: values.length
+                        ? values.reduce((sum, value) => sum + value, 0) / values.length
+                        : 0,
+                    count: values.length
+                };
+            }).filter(stat => stat.count).sort((a, b) => b.average - a.average).slice(0, 10);
+            const metricMaximum = Math.max(...metricStats.map(stat => stat.average), 1);
+            if (metricStats.length) {
+                addKpi(metricStats[0].element.prompt, "highest-average metric");
+                addKpi(fmt(metricStats[0].average), "highest average value");
+            }
+            metricStats.forEach(stat => {
+                addBar(metricChartHost, stat.element.prompt, stat.average / metricMaximum,
+                    fmt(stat.average), `Average ${stat.average.toFixed(2)}`);
+            });
+
+            const chartElement = numeric[0];
+            const buckets = new Map();
+            current.forEach(record => {
+                const value = Number(valueFor(record, chartElement.key));
+                if (Number.isFinite(value)) buckets.set(String(value), (buckets.get(String(value)) || 0) + 1);
+            });
+            const topValues = [...buckets.entries()]
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+            const maximum = Math.max(...topValues.map(([, count]) => count), 1);
+            topValues.forEach(([label, count]) => {
+                addBar(valueChartHost, label, count / maximum, String(count), `${count} record(s)`);
+            });
+        }
+
+        document.getElementById("saveConfig").addEventListener("click", async () => {
+            try {
+                const response = await fetch("/Data_actions_config", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                    body: JSON.stringify({
+                        ...token,
+                        dataActions: { fields: modes, hidden }
+                    })
+                });
+                if (!response.ok) throw new Error(`Save failed (HTTP ${response.status}).`);
+                token.dataActions = { fields: modes, hidden };
+                setStatus("Data action configuration saved to data.token.");
+                renderRecords();
+                renderSummary();
+            } catch (error) {
+                setStatus(error instanceof Error ? error.message : "Could not save configuration.", true);
+            }
+        });
+
+        async function load() {
+            try {
+                const response = await fetch("/form-token", { cache: "no-store" });
+                if (!response.ok) throw new Error("No built form is available.");
+                token = await response.json();
+                elements = flattenElements(token);
+                modes = { ...(token.dataActions?.fields || {}) };
+                hidden = { ...(token.dataActions?.hidden || {}) };
+                records = Array.isArray(token.responses) ? token.responses : [];
+                document.getElementById("title").textContent = `Data Actions — ${token.name || "Saved form"}`;
+                const meta = document.getElementById("formMeta");
+                meta.textContent = `${records.length} responses · ${elements.length} fields`;
+                meta.hidden = false;
+                renderConfiguration();
+                renderFilters();
+                renderRecords();
+                renderSummary();
+            } catch (error) {
+                setStatus(error instanceof Error ? error.message : "Could not load the built form.", true);
+            }
+        }
+        load();
+    </script>
+</body>
+</html>

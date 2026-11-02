@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scouting Sprocket</title>
+
+    <style>
+        :root {
+            color-scheme: light;
+            --sidebar-width: 250px;
+            --background: #d4ceb1;
+            --sidebar: #ba8a43;
+            --surface: #f1e4c4;
+            --outline: #fdf6e3;
+            --text: #ba8a43;
+            --muted: #3f4534;
+            --accent: #380372;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--background);
+            color: var(--text);
+            font-family: Arial, sans-serif;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            flex-shrink: 0;
+            padding: 28px 16px;
+            background: var(--sidebar);
+            border-right: 1px solid var(--outline);
+        }
+
+        .brand {
+            display: block;
+            margin: 0 12px 32px;
+            color: var(--surface);
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-decoration: none;
+        }
+
+        .brand span {
+            display: block;
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 0.72rem;
+            font-weight: 400;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .nav-list {
+            display: grid;
+            gap: 6px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 12px 14px;
+            border-radius: 8px;
+            color: var(--muted);
+            text-decoration: none;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link:focus-visible,
+        .nav-link.active {
+            background: var(--surface);
+            color: var(--text);
+            outline: none;
+        }
+
+        .nav-link.active {
+            box-shadow: inset 3px 0 var(--accent);
+        }
+
+        .content {
+            flex: 1;
+            padding: 48px;
+        }
+
+        .content h1 {
+            margin-top: 0;
+        }
+
+        .content p {
+            color: var(--muted);
+        }
+
+        @media (max-width: 640px) {
+            .layout {
+                display: block;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 20px 16px;
+                border-right: 0;
+                border-bottom: 1px solid var(--outline);
+            }
+
+            .brand {
+                margin-bottom: 18px;
+            }
+
+            .nav-list {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .content {
+                padding: 28px 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <a class="brand" href="/">
+                Scouting Sprocket
+                <span>Admin View</span>
+            </a>
+
+            <nav aria-label="Main navigation">
+                <ul class="nav-list">
+                    <li>
+                        <a class="nav-link active" href="/" aria-current="page">
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="/Forms.html">
+                            Forms
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="/Builder.html">
+                            Builder
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="/Export.html">
+                            Export
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="/Import.html">
+                            Import
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="/Data_actions.html">
+                            Data Actions
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="/Settings.html">
+                            Settings
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="content">
+            <h1>Dashboard</h1>
+            <p>Welcome to Scouting Sprocket.</p>
+        </main>
+    </div>
+</body>
+</html>
