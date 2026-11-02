@@ -121,16 +121,16 @@
 <body>
     <div class="layout">
         <aside class="sidebar">
-            <a class="brand" href="/">Scouting Sprocket<span>Admin View</span></a>
+            <a class="brand" href="./">Scouting Sprocket<span>Admin View</span></a>
             <nav aria-label="Main navigation">
                 <ul class="nav-list">
-                    <li><a class="nav-link" href="/">Dashboard</a></li>
-                    <li><a class="nav-link" href="/Forms.html">Forms</a></li>
-                    <li><a class="nav-link" href="/Builder.html">Builder</a></li>
-                    <li><a class="nav-link" href="/Export.html">Export</a></li>
-                    <li><a class="nav-link" href="/Import.html">Import</a></li>
-                    <li><a class="nav-link" href="/Data_actions.html">Data Actions</a></li>
-                    <li><a class="nav-link active" href="/Settings.html" aria-current="page">Settings</a></li>
+                    <li><a class="nav-link" href="./">Dashboard</a></li>
+                    <li><a class="nav-link" href="./Forms.html">Forms</a></li>
+                    <li><a class="nav-link" href="./Builder.html">Builder</a></li>
+                    <li><a class="nav-link" href="./Export.html">Export</a></li>
+                    <li><a class="nav-link" href="./Import.html">Import</a></li>
+                    <li><a class="nav-link" href="./Data_actions.html">Data Actions</a></li>
+                    <li><a class="nav-link active" href="./Settings.html" aria-current="page">Settings</a></li>
                 </ul>
             </nav>
         </aside>
@@ -201,6 +201,7 @@
             </div>
         </main>
     </div>
+    <script src="./app-storage.js"></script>
     <script>
         const status = document.getElementById("status");
         const lockStatus = document.getElementById("lockStatus");
@@ -212,18 +213,11 @@
         const confirmAction = message => window.confirm(message);
 
         async function readToken() {
-            const response = await fetch("/form-token", { cache: "no-store" });
-            if (!response.ok) throw new Error("No saved token exists.");
-            return response.json();
+            return SprocketStorage.readToken();
         }
 
         async function saveToken(token) {
-            const response = await fetch("/Builder_Form_reponse", {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "Accept": "application/json" },
-                body: JSON.stringify(token)
-            });
-            if (!response.ok) throw new Error(`Save failed (HTTP ${response.status}).`);
+            SprocketStorage.saveToken(token, true);
         }
 
         async function updateToken(update, message) {
@@ -242,15 +236,7 @@
                     return;
                 }
                 try {
-                    const response = await fetch("/settings/lock", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-                        body: JSON.stringify({ action, password })
-                    });
-                    if (!response.ok) {
-                        const detail = await response.text();
-                        throw new Error(detail || `Lock action failed (HTTP ${response.status}).`);
-                    }
+                    SprocketStorage.lock(action, password);
                     lockPassword.value = "";
                     lockStatus.textContent = action === "lock"
                         ? "Locked: Builder and Settings changes are blocked."
@@ -357,8 +343,7 @@
         document.getElementById("wipeData").addEventListener("click", async () => {
             if (!confirmAction("Wipe ALL persistent data? This clears the form, responses, and settings but keeps data.token in place.")) return;
             try {
-                const response = await fetch("/settings/wipe", { method: "POST" });
-                if (!response.ok) throw new Error(`Wipe failed (HTTP ${response.status}).`);
+                SprocketStorage.wipe();
                 setStatus("All persistent data was cleared. data.token was kept.");
             } catch (error) {
                 setStatus(error instanceof Error ? error.message : "Persistent data could not be wiped.", true);

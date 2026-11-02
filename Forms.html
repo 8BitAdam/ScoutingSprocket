@@ -277,19 +277,19 @@
 <body>
     <div class="layout">
         <aside class="sidebar">
-            <a class="brand" href="/">
+            <a class="brand" href="./">
                 Scouting Sprocket
                 <span>Admin View</span>
             </a>
             <nav aria-label="Main navigation">
                 <ul class="nav-list">
-                    <li><a class="nav-link" href="/">Dashboard</a></li>
-                    <li><a class="nav-link active" href="/Forms.html" aria-current="page">Forms</a></li>
-                    <li><a class="nav-link" href="/Builder.html">Builder</a></li>
-                    <li><a class="nav-link" href="/Export.html">Export</a></li>
-                    <li><a class="nav-link" href="/Import.html">Import</a></li>
-                    <li><a class="nav-link" href="/Data_actions.html">Data Actions</a></li>
-                    <li><a class="nav-link" href="/Settings.html">Settings</a></li>
+                    <li><a class="nav-link" href="./">Dashboard</a></li>
+                    <li><a class="nav-link active" href="./Forms.html" aria-current="page">Forms</a></li>
+                    <li><a class="nav-link" href="./Builder.html">Builder</a></li>
+                    <li><a class="nav-link" href="./Export.html">Export</a></li>
+                    <li><a class="nav-link" href="./Import.html">Import</a></li>
+                    <li><a class="nav-link" href="./Data_actions.html">Data Actions</a></li>
+                    <li><a class="nav-link" href="./Settings.html">Settings</a></li>
                 </ul>
             </nav>
         </aside>
@@ -310,6 +310,7 @@
         </main>
     </div>
 
+    <script src="./app-storage.js"></script>
     <script>
         const form = document.getElementById("form");
         const formTitle = document.getElementById("formTitle");
@@ -539,9 +540,7 @@
 
         async function load() {
             try {
-                const tokenResponse = await fetch("/form-token", { cache: "no-store" });
-                if (!tokenResponse.ok) throw new Error("No saved form was found.");
-                const token = await tokenResponse.json();
+                const token = SprocketStorage.readToken();
                 tokenData = token;
                 definition = {
                     name: token.name,
@@ -566,10 +565,7 @@
             save.disabled = true;
             setStatus("Saving responses…");
             try {
-                const response = await fetch("/Form_response", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json", "Accept": "application/json" },
-                    body: JSON.stringify({
+                SprocketStorage.saveToken({
                         ...tokenData,
                         name: definition.name,
                         sections: definition.sections,
@@ -582,9 +578,7 @@
                                 values: responses
                             }
                         ]
-                    })
-                });
-                if (!response.ok) throw new Error(`Save failed (HTTP ${response.status}).`);
+                    }, true);
                 tokenData.responses = [
                     ...(Array.isArray(tokenData.responses)
                         ? tokenData.responses

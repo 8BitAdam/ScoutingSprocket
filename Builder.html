@@ -451,20 +451,20 @@
 <body>
   <div class="layout">
     <aside class="sidebar">
-      <a class="brand" href="/">
+      <a class="brand" href="./">
         Scouting Sprocket
         <span>Admin View</span>
       </a>
 
       <nav aria-label="Main navigation">
         <ul class="nav-list">
-          <li><a class="nav-link" href="/">Dashboard</a></li>
-          <li><a class="nav-link" href="/Forms.html">Forms</a></li>
-          <li><a class="nav-link active" href="/Builder.html" aria-current="page">Builder</a></li>
-          <li><a class="nav-link" href="/Export.html">Export</a></li>
-          <li><a class="nav-link" href="/Import.html">Import</a></li>
-          <li><a class="nav-link" href="/Data_actions.html">Data Actions</a></li>
-          <li><a class="nav-link" href="/Settings.html">Settings</a></li>
+          <li><a class="nav-link" href="./">Dashboard</a></li>
+          <li><a class="nav-link" href="./Forms.html">Forms</a></li>
+          <li><a class="nav-link active" href="./Builder.html" aria-current="page">Builder</a></li>
+          <li><a class="nav-link" href="./Export.html">Export</a></li>
+          <li><a class="nav-link" href="./Import.html">Import</a></li>
+          <li><a class="nav-link" href="./Data_actions.html">Data Actions</a></li>
+          <li><a class="nav-link" href="./Settings.html">Settings</a></li>
         </ul>
       </nav>
     </aside>
@@ -609,9 +609,7 @@
           <h2 id="outputHeading">3. Save form</h2>
 
           <p class="muted">
-            Save to Token sends the form dictionary as JSON to
-            <code>/Builder_Form_reponse</code>.
-            Token creation and storage are handled by your backend.
+            Save to Token stores the form dictionary in this browser.
           </p>
 
           <div class="actions">
@@ -648,6 +646,7 @@
     </main>
   </div>
 
+  <script src="./app-storage.js"></script>
   <script>
     "use strict";
 
@@ -667,14 +666,7 @@
         }]
       }
 
-      Save endpoint:
-      POST /Builder_Form_reponse
-
-      Content-Type:
-      application/json
     */
-
-    const SAVE_ENDPOINT = "/Builder_Form_reponse";
 
     const LIMITS = Object.freeze({
       formName: 100,
@@ -1360,21 +1352,20 @@
       try {
         formData.name = formNameInput.value.trim();
 
-        const currentTokenResponse = await fetch(
-          "/form-token",
-          { cache: "no-store" }
-        );
-        const currentToken = currentTokenResponse.ok
-          ? await currentTokenResponse.json()
-          : {};
+        let currentToken = {};
+        try {
+          currentToken = SprocketStorage.readToken();
+        } catch {
+          currentToken = {};
+        }
         const updatedForm = JSON.parse(validateFormData());
-        const payload = JSON.stringify({
+        const token = {
           ...currentToken,
           ...updatedForm,
           responses: Array.isArray(currentToken.responses)
             ? currentToken.responses
             : []
-        });
+        };
 
         saving = true;
 
@@ -1385,7 +1376,7 @@
 
         setStatus(
           "saveStatus",
-          "Sending form JSON to the backend…",
+          "Saving form to this browser…",
           "info"
         );
 
@@ -1397,53 +1388,7 @@
         const csrfToken = document
           .querySelector('meta[name="csrf-token"]')
           ?.content
-          ?.trim();
-
-        if (csrfToken) {
-          headers["X-CSRF-Token"] = csrfToken;
-        }
-
-        const response = await fetch(SAVE_ENDPOINT, {
-          method: "POST",
-          mode: "same-origin",
-          credentials: "same-origin",
-          redirect: "error",
-          headers,
-          body: payload
-        });
-
-        const responseText = await response.text();
-
-        if (!response.ok) {
-          const detail = responseText.trim().slice(0, 500);
-
-          throw new Error(
-            `Backend returned HTTP ${response.status}` +
-            `${detail ? `: ${detail}` : ""}`
-          );
-        }
-
-        if (responseText.trim()) {
-          let result;
-
-          try {
-            result = JSON.parse(responseText);
-          } catch {
-            result = null;
-          }
-
-          if (result && result.ok === false) {
-            throw new Error(
-              typeof result.error === "string"
-                ? result.error.slice(0, 500)
-                : "The backend rejected the form."
-            );
-          }
-        }
-
-        setStatus(
-          "saveStatus",
-          "Form JSON was accepted by /Builder_Form_reponse.",
+          SprocketStorage.saveToken(token, true);
           "success"
         );
 

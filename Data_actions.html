@@ -309,6 +309,7 @@
             </div>
         </main>
     </div>
+    <script src="./app-storage.js"></script>
     <script>
         const status = document.getElementById("status");
         const configuration = document.getElementById("configuration");
@@ -586,15 +587,10 @@
 
         document.getElementById("saveConfig").addEventListener("click", async () => {
             try {
-                const response = await fetch("/Data_actions_config", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json", "Accept": "application/json" },
-                    body: JSON.stringify({
+                SprocketStorage.saveToken({
                         ...token,
                         dataActions: { fields: modes, hidden }
-                    })
-                });
-                if (!response.ok) throw new Error(`Save failed (HTTP ${response.status}).`);
+                    }, true);
                 token.dataActions = { fields: modes, hidden };
                 setStatus("Data action configuration saved to data.token.");
                 renderRecords();
@@ -606,9 +602,7 @@
 
         async function load() {
             try {
-                const response = await fetch("/form-token", { cache: "no-store" });
-                if (!response.ok) throw new Error("No built form is available.");
-                token = await response.json();
+                token = SprocketStorage.readToken();
                 elements = flattenElements(token);
                 modes = { ...(token.dataActions?.fields || {}) };
                 hidden = { ...(token.dataActions?.hidden || {}) };
