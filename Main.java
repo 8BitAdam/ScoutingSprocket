@@ -6,11 +6,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.awt.Desktop;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -51,6 +53,19 @@ public class Main {
         System.out.println("http://localhost:" + PORT);
         System.out.println("Persistent token file: " + TOKEN_FILE);
         System.out.println("Token backup file: " + BACKUP_FILE);
+        openBrowser();
+    }
+
+    private static void openBrowser() {
+        if (!Desktop.isDesktopSupported()) {
+            return;
+        }
+
+        try {
+            Desktop.getDesktop().browse(URI.create("http://localhost:" + PORT));
+        } catch (IOException | UnsupportedOperationException error) {
+            System.err.println("Could not open the browser automatically: " + error.getMessage());
+        }
     }
 
     private static int configuredPort() {
