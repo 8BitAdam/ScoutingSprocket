@@ -56,14 +56,11 @@
         }
 
         .brand-mark {
-            display: grid;
+            display: block;
             width: 42px;
             height: 42px;
             flex-shrink: 0;
-            place-items: center;
-            border: 2px solid var(--surface);
-            border-radius: 50%;
-            font-size: 1.1rem;
+            object-fit: contain;
         }
 
         .brand-copy {
@@ -152,16 +149,11 @@
         }
 
         .welcome-mark {
-            display: grid;
+            display: block;
             width: 72px;
             height: 72px;
             flex-shrink: 0;
-            place-items: center;
-            border-radius: 50%;
-            background: var(--sidebar);
-            color: var(--surface);
-            font-size: 2rem;
-            font-weight: 700;
+            object-fit: contain;
         }
 
         .welcome-panel h2 {
@@ -249,7 +241,7 @@
     <div class="layout">
         <aside class="sidebar">
             <a class="brand" href="./">
-                <span class="brand-mark" aria-hidden="true">M</span>
+                <img class="brand-mark" src="./assets/img/Michael.png" alt="Michel mascot">
                 <span class="brand-copy">
                     Michel
                     <span>Scouting Sprocket</span>
@@ -301,27 +293,81 @@
             <div class="dashboard">
                 <header class="dashboard-header">
                     <div>
-                        <h1>Michel's Dashboard</h1>
+                        <h1>Scouting Dashboard</h1>
                         <p>Welcome back to your scouting workspace.</p>
                     </div>
-                    <span class="dashboard-date">November 3, 2026</span>
+                    <span id="dashboard-date" class="dashboard-date"></span>
                 </header>
 
                 <section class="welcome-panel" aria-labelledby="welcome-title">
-                    <div class="welcome-mark" aria-hidden="true">M</div>
+                    <img class="welcome-mark" src="./assets/img/Michael.png" alt="Michel mascot">
                     <div>
-                        <h2 id="welcome-title">Ready when you are, Michel.</h2>
+                        <h2 id="welcome-title">Ready when you are.</h2>
                         <p>Review your scouting activity, manage forms, and keep your data ready for the next match.</p>
                     </div>
                 </section>
 
                 <section class="summary-grid" aria-label="Dashboard summary">
-                    <div class="summary-item"><strong>24</strong><span>Matches reviewed</span></div>
-                    <div class="summary-item"><strong>18</strong><span>Teams tracked</span></div>
-                    <div class="summary-item"><strong>92%</strong><span>Data complete</span></div>
+                    <div class="summary-item"><strong id="response-count">0</strong><span>Responses recorded</span></div>
+                    <div class="summary-item"><strong id="team-count">0</strong><span>Teams tracked</span></div>
+                    <div class="summary-item"><strong id="completion-rate">0%</strong><span>Data complete</span></div>
                 </section>
             </div>
         </main>
     </div>
+    <script src="./app-storage.js"></script>
+    <script>
+        const dashboardDate = document.getElementById("dashboard-date");
+        const responseCount = document.getElementById("response-count");
+        const teamCount = document.getElementById("team-count");
+        const completionRate = document.getElementById("completion-rate");
+
+        dashboardDate.textContent = new Intl.DateTimeFormat(undefined, {
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+        }).format(new Date());
+
+        const hasAnswer = value => {
+            if (Array.isArray(value)) return value.some(hasAnswer);
+            if (value && typeof value === "object") return Object.values(value).some(hasAnswer);
+            return value !== undefined && value !== null && String(value).trim() !== "";
+        };
+
+        try {
+            const token = SprocketStorage.readToken();
+            const responses = Array.isArray(token.responses) ? token.responses : [];
+            const elements = Array.isArray(token.sections)
+                ? token.sections.flatMap(section => Array.isArray(section.elements) ? section.elements : [])
+                : [];
+            const teamIndexes = elements
+                .map((element, index) => /team/i.test(element.prompt || "") ? index : -1)
+                .filter(index => index >= 0);
+            const teams = new Set();
+
+            responses.forEach(record => {
+                const values = record && record.values && typeof record.values === "object" ? record.values : {};
+                teamIndexes.forEach(index => {
+                    const value = values[index];
+                    if (Array.isArray(value)) value.filter(hasAnswer).forEach(item => teams.add(String(item).trim()));
+                    else if (hasAnswer(value)) teams.add(String(value).trim());
+                });
+            });
+
+            const totalFields = responses.length * elements.length;
+            const answeredFields = responses.reduce((total, record) => {
+                const values = record && record.values && typeof record.values === "object" ? record.values : {};
+                return total + elements.reduce((count, _, index) => count + (hasAnswer(values[index]) ? 1 : 0), 0);
+            }, 0);
+
+            responseCount.textContent = responses.length;
+            teamCount.textContent = teams.size;
+            completionRate.textContent = `${totalFields ? Math.round((answeredFields / totalFields) * 100) : 0}%`;
+        } catch {
+            responseCount.textContent = "0";
+            teamCount.textContent = "0";
+            completionRate.textContent = "0%";
+        }
+    </script>
 </body>
 </html>
