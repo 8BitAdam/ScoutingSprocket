@@ -44,7 +44,9 @@
         }
 
         .brand {
-            display: block;
+            display: flex;
+            align-items: center;
+            gap: 12px;
             margin: 0 12px 32px;
             color: var(--surface);
             font-size: 1.25rem;
@@ -53,7 +55,22 @@
             text-decoration: none;
         }
 
-        .brand span {
+        .brand-mark {
+            display: grid;
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
+            place-items: center;
+            border: 2px solid var(--surface);
+            border-radius: 50%;
+            font-size: 1.1rem;
+        }
+
+        .brand-copy {
+            display: block;
+        }
+
+        .brand-copy > span {
             display: block;
             margin-top: 5px;
             color: var(--muted);
@@ -97,6 +114,89 @@
             padding: 48px;
         }
 
+        .dashboard {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .dashboard-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .dashboard-header h1 {
+            margin: 0 0 8px;
+        }
+
+        .dashboard-header p {
+            margin: 0;
+        }
+
+        .dashboard-date {
+            color: var(--muted);
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .welcome-panel {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 28px;
+            border: 1px solid var(--outline);
+            border-radius: 12px;
+            background: var(--surface);
+        }
+
+        .welcome-mark {
+            display: grid;
+            width: 72px;
+            height: 72px;
+            flex-shrink: 0;
+            place-items: center;
+            border-radius: 50%;
+            background: var(--sidebar);
+            color: var(--surface);
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .welcome-panel h2 {
+            margin: 0 0 6px;
+        }
+
+        .welcome-panel p {
+            margin: 0;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-top: 18px;
+        }
+
+        .summary-item {
+            padding: 20px;
+            border: 1px solid var(--outline);
+            border-radius: 10px;
+            background: var(--surface);
+        }
+
+        .summary-item strong {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 1.6rem;
+        }
+
+        .summary-item span {
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
         .content h1 {
             margin-top: 0;
         }
@@ -128,6 +228,19 @@
             .content {
                 padding: 28px 24px;
             }
+
+            .dashboard-header {
+                display: block;
+            }
+
+            .dashboard-date {
+                display: block;
+                margin-top: 12px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -136,8 +249,11 @@
     <div class="layout">
         <aside class="sidebar">
             <a class="brand" href="/">
-                Scouting Sprocket
-                <span>Admin View</span>
+                <span class="brand-mark" aria-hidden="true">M</span>
+                <span class="brand-copy">
+                    Michel
+                    <span>Scouting Sprocket</span>
+                </span>
             </a>
 
             <nav aria-label="Main navigation">
@@ -182,8 +298,29 @@
         </aside>
 
         <main class="content">
-            <h1>Dashboard</h1>
-            <p>Welcome to Scouting Sprocket.</p>
+            <div class="dashboard">
+                <header class="dashboard-header">
+                    <div>
+                        <h1>Michel's Dashboard</h1>
+                        <p>Welcome back to your scouting workspace.</p>
+                    </div>
+                    <span class="dashboard-date">November 3, 2026</span>
+                </header>
+
+                <section class="welcome-panel" aria-labelledby="welcome-title">
+                    <div class="welcome-mark" aria-hidden="true">M</div>
+                    <div>
+                        <h2 id="welcome-title">Ready when you are, Michel.</h2>
+                        <p>Review your scouting activity, manage forms, and keep your data ready for the next match.</p>
+                    </div>
+                </section>
+
+                <section class="summary-grid" aria-label="Dashboard summary">
+                    <div class="summary-item"><strong>24</strong><span>Matches reviewed</span></div>
+                    <div class="summary-item"><strong>18</strong><span>Teams tracked</span></div>
+                    <div class="summary-item"><strong>92%</strong><span>Data complete</span></div>
+                </section>
+            </div>
         </main>
     </div>
 </body>
