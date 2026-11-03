@@ -228,40 +228,40 @@
             } catch (error) {
                 setStatus(error instanceof Error ? error.message : "The setting could not be saved.", true);
             }
-
-            async function changeLock(action) {
-                const password = lockPassword.value;
-                if (!password) {
-                    setStatus("Enter a password first.", true);
-                    return;
-                }
-                try {
-                    SprocketStorage.lock(action, password);
-                    lockPassword.value = "";
-                    lockStatus.textContent = action === "lock"
-                        ? "Locked: Builder and Settings changes are blocked."
-                        : "Unlocked: Builder and Settings changes are available.";
-                    setStatus(action === "lock" ? "Settings locked." : "Settings unlocked.");
-                } catch (error) {
-                    setStatus(error instanceof Error ? error.message : "Lock action failed.", true);
-                }
-            }
-
-            async function loadLockStatus() {
-                try {
-                    const token = await readToken();
-                    lockStatus.textContent = token.lock?.enabled
-                        ? "Locked: Builder and Settings changes are blocked."
-                        : "Unlocked: Builder and Settings changes are available.";
-                } catch {
-                    lockStatus.textContent = "No saved token exists yet.";
-                }
-            }
-
-            document.getElementById("lockButton").addEventListener("click", () => changeLock("lock"));
-            document.getElementById("unlockButton").addEventListener("click", () => changeLock("unlock"));
-            loadLockStatus();
         }
+
+        async function changeLock(action) {
+            const password = lockPassword.value;
+            if (!password) {
+                setStatus("Enter a password first.", true);
+                return;
+            }
+            try {
+                SprocketStorage.lock(action, password);
+                lockPassword.value = "";
+                lockStatus.textContent = action === "lock"
+                    ? "Locked: Builder and Settings changes are blocked."
+                    : "Unlocked: Builder and Settings changes are available.";
+                setStatus(action === "lock" ? "Settings locked." : "Settings unlocked.");
+            } catch (error) {
+                setStatus(error instanceof Error ? error.message : "Lock action failed.", true);
+            }
+        }
+
+        async function loadLockStatus() {
+            try {
+                const token = await readToken();
+                lockStatus.textContent = token.lock?.enabled
+                    ? "Locked: Builder and Settings changes are blocked."
+                    : "Unlocked: Builder and Settings changes are available.";
+            } catch {
+                lockStatus.textContent = "No saved token exists yet.";
+            }
+        }
+
+        document.getElementById("lockButton").addEventListener("click", () => changeLock("lock"));
+        document.getElementById("unlockButton").addEventListener("click", () => changeLock("unlock"));
+        loadLockStatus();
 
         document.getElementById("clearResponses").addEventListener("click", () => {
             if (!confirmAction("Clear every saved response? The form definition will remain.")) return;
