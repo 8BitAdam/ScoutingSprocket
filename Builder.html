@@ -1380,15 +1380,11 @@
           "info"
         );
 
-        const headers = {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        };
+        SprocketStorage.saveToken(token, true);
 
-        const csrfToken = document
-          .querySelector('meta[name="csrf-token"]')
-          ?.content
-          SprocketStorage.saveToken(token, true);
+        setStatus(
+          "saveStatus",
+          "Form saved to this browser.",
           "success"
         );
 
