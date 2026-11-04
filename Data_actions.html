@@ -347,7 +347,9 @@ function table(headings, rows, numericFrom = Infinity) {
     const t = el("table");
     const head = el("tr");
     headings.forEach(h => head.append(el("th", "", h)));
-    t.append(el("thead")).append(head);
+    const thead = el("thead");
+    thead.append(head);
+    t.append(thead);
     const body = el("tbody");
     rows.forEach(row => {
         const tr = el("tr");
