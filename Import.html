@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Scouting Sprocket — Import</title>
 
-<!-- Fonts from the Style slide. For offline-first use, self-host these two families; the fallbacks keep the layout intact without them. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anta&family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
@@ -31,97 +30,479 @@
     --font-body: "M PLUS Rounded 1c", "Segoe UI", system-ui, sans-serif;
     --gears: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cg fill='%23c4934b'%3E%3Ccircle cx='70' cy='70' r='36'/%3E%3Ccircle cx='70' cy='70' r='41' fill='none' stroke='%23c4934b' stroke-width='12' stroke-dasharray='10.8 10.8'/%3E%3Ccircle cx='170' cy='172' r='26'/%3E%3Ccircle cx='170' cy='172' r='30' fill='none' stroke='%23c4934b' stroke-width='9' stroke-dasharray='9.4 9.4'/%3E%3C/g%3E%3Ccircle cx='70' cy='70' r='14' fill='%23ba8a43'/%3E%3Ccircle cx='170' cy='172' r='10' fill='%23ba8a43'/%3E%3C/svg%3E");
 }
+
 * { box-sizing: border-box; }
-body { margin: 0; min-height: 100vh; background: var(--background); color: var(--muted); font-family: var(--font-body); line-height: 1.55; }
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--background);
+    color: var(--muted);
+    font-family: var(--font-body);
+    line-height: 1.55;
+}
+
 button, input { font: inherit; }
 button { touch-action: manipulation; }
+
 [hidden] { display: none !important; }
-.layout { display: flex; min-height: 100vh; }
+
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
 
 /* ---------- Side nav ---------- */
-.sidebar { width: var(--sidebar-width); flex-shrink: 0; padding: 28px 16px; background-color: var(--sidebar); background-image: var(--gears); background-size: 240px 240px; border-right: 1px solid var(--outline); position: sticky; top: 0; height: 100vh; align-self: flex-start; overflow-y: auto; }
-.brand { display: block; margin: 0 12px 32px; color: var(--surface); font-size: 1.25rem; font-weight: 700; letter-spacing: .04em; text-decoration: none; }
-.nav-list { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
-.nav-link { display: block; padding: 12px 14px; border-radius: 8px; color: var(--muted); text-decoration: none; }
-.nav-link:hover, .nav-link:focus-visible, .nav-link.active { background: var(--surface); color: var(--accent); outline: none; }
-.nav-link:focus-visible { box-shadow: 0 0 0 2px var(--accent); }
-.nav-link.active { box-shadow: inset 3px 0 var(--accent); font-weight: 700; }
-.app-bar, .nav-close, .nav-scrim { display: none; }
+
+.sidebar {
+    width: var(--sidebar-width);
+    flex-shrink: 0;
+    padding: 28px 16px;
+    background-color: var(--sidebar);
+    background-image: var(--gears);
+    background-size: 240px 240px;
+    border-right: 1px solid var(--outline);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    align-self: flex-start;
+    overflow-y: auto;
+}
+
+.brand {
+    display: block;
+    margin: 0 12px 32px;
+    color: var(--surface);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-decoration: none;
+}
+
+.nav-list {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.nav-link {
+    display: block;
+    padding: 12px 14px;
+    border-radius: 8px;
+    color: var(--muted);
+    text-decoration: none;
+}
+
+.nav-link:hover,
+.nav-link:focus-visible,
+.nav-link.active {
+    background: var(--surface);
+    color: var(--accent);
+    outline: none;
+}
+
+.nav-link:focus-visible {
+    box-shadow: 0 0 0 2px var(--accent);
+}
+
+.nav-link.active {
+    box-shadow: inset 3px 0 var(--accent);
+    font-weight: 700;
+}
+
+.app-bar, .nav-close, .nav-scrim {
+    display: none;
+}
 
 /* ---------- Page ---------- */
-.content { flex: 1; min-width: 0; padding: 48px; }
-.workspace { max-width: 820px; margin: 0 auto; display: grid; gap: 18px; }
-h1 { display: inline-block; margin: 0 0 10px; color: var(--header); font-family: var(--font-display); font-size: clamp(2.2rem, 5vw, 3rem); font-weight: 400; line-height: 1.1; }
-h1::after { content: ""; display: block; height: 10px; margin-top: 8px; border-radius: 3px; background: var(--accent); }
-h2 { margin: 0 0 6px; color: var(--header); font-family: var(--font-display); font-size: clamp(1.4rem, 3vw, 1.9rem); font-weight: 400; line-height: 1.15; }
-.intro { margin: 0; font-size: 1.05rem; }
-.panel { margin: 0; padding: clamp(18px, 3vw, 28px); border: 1px solid var(--outline); border-radius: 16px; background: var(--surface); }
-.hint { margin: 0 0 16px; font-size: .95rem; }
-.note { margin: 0; padding: 12px 16px; border-radius: 12px; background: var(--raised); }
-.note.lock { background: #f8dddd; color: #702323; font-weight: 700; }
-.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
 
-/* Buttons and inputs */
-button, .button { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 10px 22px; border: 1px solid var(--accent); border-radius: 10px; background: var(--accent); color: #fff; font-weight: 700; text-decoration: none; cursor: pointer; }
-button:hover:not(:disabled), .button:hover { background: var(--accent-hover); }
-button.secondary, .button.secondary { background: transparent; color: var(--accent); }
-button.secondary:hover:not(:disabled), .button.secondary:hover { background: var(--accent-soft); }
-button.danger { border-color: var(--danger); background: var(--danger); }
-button:disabled { opacity: .5; cursor: not-allowed; }
-button:focus-visible, .button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-input[type="file"] { display: block; width: 100%; padding: 10px; border: 2px dashed var(--line); border-radius: 12px; background: var(--raised); color: var(--muted); }
-input[type="file"]::file-selector-button { min-height: 44px; margin-right: 14px; padding: 8px 18px; border: 1px solid var(--accent); border-radius: 10px; background: var(--accent); color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
-input[type="file"]:disabled { opacity: .5; }
-.camera { display: block; width: 100%; max-height: 380px; margin-top: 16px; border-radius: 12px; background: #1f241d; object-fit: cover; }
+.content {
+    flex: 1;
+    min-width: 0;
+    padding: 48px;
+}
 
-/* Toast and dialog */
-.toast { position: fixed; left: 50%; bottom: 20px; z-index: 60; max-width: min(480px, calc(100vw - 32px)); padding: 12px 18px; transform: translateX(-50%); border-radius: 12px; background: var(--raised); box-shadow: 0 6px 20px rgba(46, 26, 20, .3); border-left: 5px solid var(--accent); overflow-wrap: anywhere; }
+.workspace {
+    max-width: 820px;
+    margin: 0 auto;
+    display: grid;
+    gap: 18px;
+}
+
+h1 {
+    display: inline-block;
+    margin: 0 0 10px;
+    color: var(--header);
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 5vw, 3rem);
+    font-weight: 400;
+    line-height: 1.1;
+}
+
+h1::after {
+    content: "";
+    display: block;
+    height: 10px;
+    margin-top: 8px;
+    border-radius: 3px;
+    background: var(--accent);
+}
+
+h2 {
+    margin: 0 0 6px;
+    color: var(--header);
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    font-weight: 400;
+    line-height: 1.15;
+}
+
+.intro {
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+.panel {
+    margin: 0;
+    padding: clamp(18px, 3vw, 28px);
+    border: 1px solid var(--outline);
+    border-radius: 16px;
+    background: var(--surface);
+}
+
+.hint {
+    margin: 0 0 16px;
+    font-size: .95rem;
+}
+
+.note {
+    margin: 0;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: var(--raised);
+}
+
+.note.lock {
+    background: #f8dddd;
+    color: #702323;
+    font-weight: 700;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+/* ---------- Buttons and inputs ---------- */
+
+button, .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 10px 22px;
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+button:hover:not(:disabled), .button:hover {
+    background: var(--accent-hover);
+}
+
+button.secondary, .button.secondary {
+    background: transparent;
+    color: var(--accent);
+}
+
+button.secondary:hover:not(:disabled), .button.secondary:hover {
+    background: var(--accent-soft);
+}
+
+button.danger {
+    border-color: var(--danger);
+    background: var(--danger);
+}
+
+button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+button:focus-visible,
+.button:focus-visible,
+input:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+}
+
+input[type="file"] {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border: 2px dashed var(--line);
+    border-radius: 12px;
+    background: var(--raised);
+    color: var(--muted);
+}
+
+input[type="file"]::file-selector-button {
+    min-height: 44px;
+    margin-right: 14px;
+    padding: 8px 18px;
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    background: var(--accent);
+    color: #fff;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+input[type="file"]:disabled {
+    opacity: .5;
+}
+
+.camera {
+    display: block;
+    width: 100%;
+    max-height: 380px;
+    margin-top: 16px;
+    border-radius: 12px;
+    background: #1f241d;
+    object-fit: cover;
+}
+
+/* ---------- Toast and dialog ---------- */
+
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 20px;
+    z-index: 60;
+    max-width: min(480px, calc(100vw - 32px));
+    padding: 12px 18px;
+    transform: translateX(-50%);
+    border-radius: 12px;
+    background: var(--raised);
+    box-shadow: 0 6px 20px rgba(46, 26, 20, .3);
+    border-left: 5px solid var(--accent);
+    overflow-wrap: anywhere;
+}
+
 .toast:empty { display: none; }
-.toast.error { border-left-color: var(--danger); color: var(--danger); }
-dialog { width: min(480px, calc(100vw - 32px)); padding: 24px; border: 0; border-radius: 16px; background: var(--surface); color: var(--muted); box-shadow: 0 16px 48px rgba(46, 26, 20, .45); }
-dialog::backdrop { background: rgba(46, 26, 20, .55); }
+
+.toast.error {
+    border-left-color: var(--danger);
+    color: var(--danger);
+}
+
+dialog {
+    width: min(480px, calc(100vw - 32px));
+    padding: 24px;
+    border: 0;
+    border-radius: 16px;
+    background: var(--surface);
+    color: var(--muted);
+    box-shadow: 0 16px 48px rgba(46, 26, 20, .45);
+}
+
+dialog::backdrop {
+    background: rgba(46, 26, 20, .55);
+}
+
 dialog h2 { margin-bottom: 10px; }
 dialog p { margin: 0 0 10px; }
-.dialog-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+
+.dialog-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 18px;
+}
+
 .dialog-actions .secondary { order: -1; }
 
-/* ---------- Vertical tablets and phones: hamburger + drawer ---------- */
+/* ---------- Mobile navigation ---------- */
+
 @media (max-width: 1100px) {
     .layout { display: block; }
+
     .content { padding: 28px 24px 40px; }
-    .sidebar { position: static; width: auto; height: auto; border-right: 0; border-bottom: 1px solid var(--outline); }
-    .nav-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .js-nav .app-bar { display: flex; position: sticky; top: 0; z-index: 20; align-items: center; gap: 6px; height: var(--nav-bar-height); padding: 0 16px 0 6px; background-color: var(--sidebar); background-image: var(--gears); background-size: 240px 240px; border-bottom: 1px solid var(--outline); }
-    .nav-toggle, .nav-close { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; min-height: 48px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: var(--muted); -webkit-tap-highlight-color: transparent; }
-    .nav-toggle:hover:not(:disabled), .nav-close:hover:not(:disabled) { background: var(--surface); }
-    .nav-toggle-bars, .nav-toggle-bars::before, .nav-toggle-bars::after { display: block; width: 22px; height: 2px; border-radius: 2px; background: currentColor; }
+
+    .sidebar {
+        position: static;
+        width: auto;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--outline);
+    }
+
+    .nav-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .js-nav .app-bar {
+        display: flex;
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        align-items: center;
+        gap: 6px;
+        height: var(--nav-bar-height);
+        padding: 0 16px 0 6px;
+        background-color: var(--sidebar);
+        background-image: var(--gears);
+        background-size: 240px 240px;
+        border-bottom: 1px solid var(--outline);
+    }
+
+    .nav-toggle, .nav-close {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        min-height: 48px;
+        padding: 0;
+        border: 0;
+        border-radius: 10px;
+        background: transparent;
+        color: var(--muted);
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .nav-toggle:hover:not(:disabled),
+    .nav-close:hover:not(:disabled) {
+        background: var(--surface);
+    }
+
+    .nav-toggle-bars,
+    .nav-toggle-bars::before,
+    .nav-toggle-bars::after {
+        display: block;
+        width: 22px;
+        height: 2px;
+        border-radius: 2px;
+        background: currentColor;
+    }
+
     .nav-toggle-bars { position: relative; }
-    .nav-toggle-bars::before, .nav-toggle-bars::after { content: ""; position: absolute; left: 0; }
+
+    .nav-toggle-bars::before,
+    .nav-toggle-bars::after {
+        content: "";
+        position: absolute;
+        left: 0;
+    }
+
     .nav-toggle-bars::before { top: -7px; }
     .nav-toggle-bars::after { top: 7px; }
-    .app-bar-title { overflow: hidden; color: var(--muted); font-size: 1.2rem; font-weight: 700; letter-spacing: .02em; text-overflow: ellipsis; white-space: nowrap; }
-    .js-nav .sidebar { position: fixed; top: 0; bottom: 0; left: 0; z-index: 50; width: min(340px, 86vw); height: auto; padding-top: 12px; border-bottom: 0; overscroll-behavior: contain; transform: translateX(-100%); visibility: hidden; transition: transform .25s ease, visibility 0s linear .25s; }
+
+    .app-bar-title {
+        overflow: hidden;
+        color: var(--muted);
+        font-size: 1.2rem;
+        font-weight: 700;
+        letter-spacing: .02em;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .js-nav .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 50;
+        width: min(340px, 86vw);
+        height: auto;
+        padding-top: 12px;
+        border-bottom: 0;
+        overscroll-behavior: contain;
+        transform: translateX(-100%);
+        visibility: hidden;
+        transition: transform .25s ease, visibility 0s linear .25s;
+    }
+
     .js-nav .nav-list { grid-template-columns: 1fr; }
-    .js-nav .nav-link { display: flex; align-items: center; min-height: 52px; font-size: 1.05rem; }
+
+    .js-nav .nav-link {
+        display: flex;
+        align-items: center;
+        min-height: 52px;
+        font-size: 1.05rem;
+    }
+
     .js-nav .nav-close { margin: 0 0 8px auto; }
-    .js-nav .nav-close::before { content: "\00d7"; font-size: 2rem; line-height: 1; }
-    .js-nav .nav-scrim { display: block; position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 40; background: rgba(46, 26, 20, .5); opacity: 0; visibility: hidden; transition: opacity .25s ease, visibility 0s linear .25s; }
+
+    .js-nav .nav-close::before {
+        content: "\00d7";
+        font-size: 2rem;
+        line-height: 1;
+    }
+
+    .js-nav .nav-scrim {
+        display: block;
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 40;
+        background: rgba(46, 26, 20, .5);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity .25s ease, visibility 0s linear .25s;
+    }
+
     .nav-open { overflow: hidden; }
-    .nav-open .sidebar { transform: none; visibility: visible; box-shadow: 8px 0 32px rgba(46, 26, 20, .35); transition-delay: 0s; }
-    .nav-open .nav-scrim { opacity: 1; visibility: visible; transition-delay: 0s; }
+
+    .nav-open .sidebar {
+        transform: none;
+        visibility: visible;
+        box-shadow: 8px 0 32px rgba(46, 26, 20, .35);
+        transition-delay: 0s;
+    }
+
+    .nav-open .nav-scrim {
+        opacity: 1;
+        visibility: visible;
+        transition-delay: 0s;
+    }
 }
+
 @media (max-width: 640px) {
     .content { padding: 20px 16px 32px; }
-    .actions button, .actions .button { flex: 1 1 100%; }
+
+    .actions button, .actions .button {
+        flex: 1 1 100%;
+    }
 }
-@media (prefers-reduced-motion: reduce) { .js-nav .sidebar, .js-nav .nav-scrim { transition: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+    .js-nav .sidebar, .js-nav .nav-scrim {
+        transition: none;
+    }
+}
 </style>
 </head>
 
 <body>
 <div class="layout">
+
     <aside class="sidebar" id="site-nav">
         <a class="brand" href="./">Scouting Sprocket</a>
+
         <nav aria-label="Main navigation">
             <ul class="nav-list">
                 <li><a class="nav-link" href="./">Dashboard</a></li>
@@ -137,16 +518,26 @@ dialog p { margin: 0 0 10px; }
 
     <main class="content">
         <div class="workspace">
+
             <header>
                 <h1>Import</h1>
-                <p class="intro">Bring in a token file or transfer code from another device. Importing replaces the form and responses saved here.</p>
+                <p class="intro">
+                    Bring in a token file or transfer code from another device.
+                    Importing replaces the form and responses saved here.
+                </p>
             </header>
+
             <p id="toast" class="toast" role="status" aria-live="polite"></p>
-            <p id="lockNote" class="note lock" hidden>The system is locked, so importing is turned off. Unlock it in Settings first.</p>
+
+            <p id="lockNote" class="note lock" hidden>
+                The system is locked, so importing is turned off.
+                Unlock it in Settings first.
+            </p>
 
             <section id="donePanel" class="panel" hidden aria-labelledby="doneHeading">
                 <h2 id="doneHeading">Import complete</h2>
                 <p class="hint">The imported form is ready to use.</p>
+
                 <div class="actions">
                     <a class="button" href="./Forms.html">Open Forms</a>
                     <a class="button secondary" href="./">Go to dashboard</a>
@@ -155,20 +546,43 @@ dialog p { margin: 0 0 10px; }
 
             <section class="panel" aria-labelledby="fileHeading">
                 <h2 id="fileHeading">Choose a file</h2>
-                <p class="hint">A token file (<code>.token</code> or <code>.json</code>) or a transfer code file (<code>.fountain</code> or <code>.txt</code>).</p>
-                <input id="file" type="file" accept=".token,.json,.fountain,.txt" aria-label="Choose an import file">
-                <div class="actions"><button id="import" type="button" disabled>Import file</button></div>
+
+                <p class="hint">
+                    A token file (<code>.token</code> or <code>.json</code>)
+                    or a fountain-code transfer file
+                    (<code>.fountain</code> or <code>.txt</code>).
+                </p>
+
+                <input
+                    id="file"
+                    type="file"
+                    accept=".token,.json,.fountain,.txt"
+                    aria-label="Choose an import file"
+                >
+
+                <div class="actions">
+                    <button id="import" type="button" disabled>Import file</button>
+                </div>
             </section>
 
             <section class="panel" aria-labelledby="camHeading">
                 <h2 id="camHeading">Scan with camera</h2>
-                <p id="camHint" class="hint">Scan a QR code or barcode that holds a token or transfer code.</p>
+
+                <p id="camHint" class="hint">
+                    Scan a token QR code, or scan the fountain-code frames
+                    from Export until the transfer is complete.
+                </p>
+
                 <video id="camera" class="camera" playsinline muted hidden></video>
+
                 <div id="camActions" class="actions">
                     <button id="startCamera" type="button">Start camera</button>
-                    <button id="stopCamera" class="secondary" type="button" disabled>Stop camera</button>
+                    <button id="stopCamera" class="secondary" type="button" disabled>
+                        Stop camera
+                    </button>
                 </div>
             </section>
+
         </div>
     </main>
 </div>
@@ -178,26 +592,40 @@ dialog p { margin: 0 0 10px; }
         <h2 id="dlgTitle">Replace the saved form?</h2>
         <p id="dlgIncoming"></p>
         <p id="dlgCurrent"></p>
-        <p><strong>This can’t be undone.</strong> Export the current data first if you might need it.</p>
+
+        <p>
+            <strong>This can’t be undone.</strong>
+            Export the current data first if you might need it.
+        </p>
+
         <div class="dialog-actions">
-            <button id="dlgOk" class="danger" value="ok">Import and replace</button>
-            <button id="dlgCancel" class="secondary" value="cancel" autofocus>Cancel</button>
+            <button id="dlgOk" class="danger" value="ok">
+                Import and replace
+            </button>
+
+            <button id="dlgCancel" class="secondary" value="cancel" autofocus>
+                Cancel
+            </button>
         </div>
     </form>
 </dialog>
 
 <script>
-/* Hamburger drawer for the side nav on tablets and phones (<= 1100px). */
+/* ---------- Hamburger navigation ---------- */
+
 (function () {
     var side = document.getElementById("site-nav");
     var content = document.querySelector(".content");
     var query = window.matchMedia("(max-width: 1100px)");
     var open = false;
+
     document.documentElement.classList.add("js-nav");
 
     var current = side.querySelector(".nav-link.active");
+
     var bar = document.createElement("header");
     bar.className = "app-bar";
+
     var toggle = document.createElement("button");
     toggle.type = "button";
     toggle.className = "nav-toggle";
@@ -205,9 +633,11 @@ dialog p { margin: 0 0 10px; }
     toggle.setAttribute("aria-controls", side.id);
     toggle.setAttribute("aria-expanded", "false");
     toggle.innerHTML = '<span class="nav-toggle-bars" aria-hidden="true"></span>';
+
     var title = document.createElement("span");
     title.className = "app-bar-title";
     title.textContent = current ? current.textContent.trim() : document.title;
+
     bar.appendChild(toggle);
     bar.appendChild(title);
 
@@ -215,212 +645,932 @@ dialog p { margin: 0 0 10px; }
     closeButton.type = "button";
     closeButton.className = "nav-close";
     closeButton.setAttribute("aria-label", "Close menu");
+
     side.insertBefore(closeButton, side.firstChild);
 
     var scrim = document.createElement("div");
     scrim.className = "nav-scrim";
     scrim.setAttribute("aria-hidden", "true");
+
     document.body.insertBefore(bar, document.body.firstChild);
     document.body.appendChild(scrim);
 
     function setOpen(next, restoreFocus) {
         if (next === open) return;
+
         open = next;
+
         document.body.classList.toggle("nav-open", open);
         toggle.setAttribute("aria-expanded", String(open));
+
         [content, bar].forEach(function (el) {
             if (open) el.setAttribute("inert", "");
             else el.removeAttribute("inert");
         });
+
         if (open) closeButton.focus();
         else if (restoreFocus !== false) toggle.focus();
     }
-    toggle.addEventListener("click", function () { setOpen(true); });
-    closeButton.addEventListener("click", function () { setOpen(false); });
-    scrim.addEventListener("click", function () { setOpen(false); });
-    side.addEventListener("click", function (e) { if (e.target.closest("a")) setOpen(false, false); });
-    document.addEventListener("keydown", function (e) { if (open && e.key === "Escape") setOpen(false); });
+
+    toggle.addEventListener("click", function () {
+        setOpen(true);
+    });
+
+    closeButton.addEventListener("click", function () {
+        setOpen(false);
+    });
+
+    scrim.addEventListener("click", function () {
+        setOpen(false);
+    });
+
+    side.addEventListener("click", function (e) {
+        if (e.target.closest("a")) setOpen(false, false);
+    });
+
+    document.addEventListener("keydown", function (e) {
+        if (open && e.key === "Escape") setOpen(false);
+    });
 
     var startX = null;
-    side.addEventListener("touchstart", function (e) { startX = e.touches[0].clientX; }, { passive: true });
+
+    side.addEventListener("touchstart", function (e) {
+        startX = e.touches[0].clientX;
+    }, { passive: true });
+
     side.addEventListener("touchend", function (e) {
-        if (startX !== null && e.changedTouches[0].clientX - startX < -60) setOpen(false);
+        if (startX !== null && e.changedTouches[0].clientX - startX < -60) {
+            setOpen(false);
+        }
+
         startX = null;
     }, { passive: true });
 
-    function onBreakpoint(e) { if (!e.matches) setOpen(false, false); }
-    if (query.addEventListener) query.addEventListener("change", onBreakpoint);
-    else if (query.addListener) query.addListener(onBreakpoint);
-    window.addEventListener("pageshow", function () { setOpen(false, false); });
+    function onBreakpoint(e) {
+        if (!e.matches) setOpen(false, false);
+    }
+
+    if (query.addEventListener) {
+        query.addEventListener("change", onBreakpoint);
+    } else if (query.addListener) {
+        query.addListener(onBreakpoint);
+    }
+
+    window.addEventListener("pageshow", function () {
+        setOpen(false, false);
+    });
 })();
 </script>
 
+<!-- External dependencies: supplied by your environment -->
+<script src="./fountain.js"></script>
 <script src="./app-storage.js"></script>
+
 <script>
 "use strict";
 
+/* ---------- Variables ---------- */
+
 const $ = id => document.getElementById(id);
-let current = null;      // token already saved on this device, if any
+
+let current = null;
 let locked = false;
+let isImporting = false;
+
 let stream = null;
 let scanning = false;
-let toastTimer;
+let scanGeneration = 0;
+
+let receiver = null;
+let lastFrameValue = null;
+let toastTimer = null;
+
+const cameraAvailable = Boolean(
+    window.isSecureContext &&
+    navigator.mediaDevices?.getUserMedia &&
+    typeof window.BarcodeDetector === "function"
+);
+
+/* ---------- Notifications ---------- */
 
 function say(message, error = false) {
     const node = $("toast");
+
     clearTimeout(toastTimer);
-    node.textContent = message;
+
+    node.textContent = String(message);
     node.className = `toast${error ? " error" : ""}`;
-    if (!error) toastTimer = setTimeout(() => { node.textContent = ""; }, 4000);
-}
 
-/* ---------- Reading a token or transfer code ---------- */
-function decodeFountain(text) {
-    const lines = text.trim().split(/\r?\n/);
-    if (lines[0] !== "SCOUTING-SPROCKET-FOUNTAIN-1") return null;
-    const count = Number(lines[1]);
-    const chunks = lines.slice(2).filter(Boolean);
-    if (!Number.isInteger(count) || count < 1 || chunks.length !== count) throw new Error("The transfer code is incomplete.");
-    const bytes = Uint8Array.from(atob(chunks.join("")), char => char.charCodeAt(0));
-    return new TextDecoder().decode(bytes);
-}
-
-function parseToken(text) {
-    let json;
-    try {
-        json = decodeFountain(text) ?? text;
-    } catch (error) {
-        throw new Error(error.message === "The transfer code is incomplete." ? error.message : "The transfer code is damaged.");
+    if (!error) {
+        toastTimer = setTimeout(() => {
+            node.textContent = "";
+            node.className = "toast";
+        }, 5000);
     }
+}
+
+/* ---------- Storage dependency ---------- */
+
+function dependenciesAvailable() {
+    return typeof SprocketStorage !== "undefined" &&
+        typeof SprocketStorage.readToken === "function" &&
+        typeof SprocketStorage.importToken === "function";
+}
+
+const storageReady = dependenciesAvailable();
+
+function updateControls() {
+    const file = $("file");
+    const importButton = $("import");
+    const startButton = $("startCamera");
+    const stopButton = $("stopCamera");
+
+    file.disabled = !storageReady || locked || isImporting;
+
+    importButton.disabled =
+        !storageReady ||
+        locked ||
+        isImporting ||
+        !file.files?.length;
+
+    startButton.disabled =
+        locked ||
+        isImporting ||
+        scanning ||
+        !cameraAvailable;
+
+    stopButton.disabled = !scanning;
+
+    $("lockNote").hidden = !locked;
+}
+
+function applyCurrentToken(token) {
+    current = token && typeof token === "object" ? token : null;
+
+    locked = Boolean(current?.lock?.enabled);
+
+    updateControls();
+}
+
+/* ---------- Fountain-code file parsing ---------- */
+
+function getFountainFrames(text) {
+    const source = String(text)
+        .replace(/^\uFEFF/, "")
+        .trim();
+
+    if (!source) return [];
+
+    // Supports JSON arrays of frames.
+    try {
+        const parsed = JSON.parse(source);
+
+        if (
+            Array.isArray(parsed) &&
+            parsed.every(frame => typeof frame === "string")
+        ) {
+            return parsed
+                .map(frame => frame.trim())
+                .filter(Boolean);
+        }
+
+        // Supports objects containing a frames array.
+        if (
+            parsed &&
+            typeof parsed === "object" &&
+            Array.isArray(parsed.frames) &&
+            parsed.frames.every(frame => typeof frame === "string")
+        ) {
+            return parsed.frames
+                .map(frame => frame.trim())
+                .filter(Boolean);
+        }
+
+    } catch {
+        // Normal fountain files are plain text.
+    }
+
+    // Supports newline-delimited fountain frames.
+    return source
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(Boolean);
+}
+
+function isSprocketFrame(frame) {
+    return typeof frame === "string" &&
+        frame.trim().startsWith("SPRK1:");
+}
+
+/* ---------- Legacy fountain-code decoding ---------- */
+
+function decodeLegacyFountain(text) {
+    const source = String(text)
+        .replace(/^\uFEFF/, "")
+        .trim();
+
+    const lines = source.split(/\r?\n/);
+
+    if (lines[0]?.trim() !== "SCOUTING-SPROCKET-FOUNTAIN-1") {
+        return null;
+    }
+
+    const count = Number(lines[1]?.trim());
+
+    const chunks = lines
+        .slice(2)
+        .map(line => line.trim())
+        .filter(Boolean);
+
+    if (
+        !Number.isSafeInteger(count) ||
+        count < 1 ||
+        chunks.length !== count
+    ) {
+        throw new Error("The transfer code is incomplete.");
+    }
+
+    let encoded = chunks.join("")
+        .replace(/-/g, "+")
+        .replace(/_/g, "/");
+
+    encoded += "=".repeat((4 - encoded.length % 4) % 4);
+
+    if (
+        !/^[A-Za-z0-9+/]*={0,2}$/.test(encoded) ||
+        encoded.length % 4 !== 0
+    ) {
+        throw new Error("The transfer code is damaged.");
+    }
+
+    try {
+        const binary = atob(encoded);
+
+        const bytes = Uint8Array.from(
+            binary,
+            character => character.charCodeAt(0)
+        );
+
+        return new TextDecoder("utf-8", {
+            fatal: true
+        }).decode(bytes);
+
+    } catch {
+        throw new Error("The transfer code is damaged.");
+    }
+}
+
+/* ---------- Fountain receiver ---------- */
+
+function createFountainReceiver() {
+    if (
+        typeof SprocketFountain === "undefined" ||
+        typeof SprocketFountain.Receiver !== "function"
+    ) {
+        throw new Error(
+            "The fountain-code decoder did not load. Check fountain.js."
+        );
+    }
+
+    return new SprocketFountain.Receiver();
+}
+
+function addFountainFrame(receiver, frame) {
+    const status = receiver.add(frame);
+
+    // Do not assume every receiver implementation returns
+    // a status object containing an `ok` property.
+
+    if (
+        status === false ||
+        status?.ok === false ||
+        status?.valid === false
+    ) {
+        throw new Error(
+            "The transfer code contains an invalid frame."
+        );
+    }
+
+    return status;
+}
+
+async function fountainIsComplete(receiver, status) {
+    const checks = [
+        [receiver, "complete"],
+        [receiver, "isComplete"],
+        [status, "complete"],
+        [status, "done"],
+        [status, "isComplete"]
+    ];
+
+    for (const [owner, key] of checks) {
+        if (!owner) continue;
+
+        let value = owner[key];
+
+        if (typeof value === "function") {
+            value = await value.call(owner);
+        }
+
+        if (value === true) return true;
+    }
+
+    const known = Number(
+        status?.known ?? receiver?.known
+    );
+
+    const pieces = Number(
+        status?.pieces ?? receiver?.pieces
+    );
+
+    return (
+        Number.isFinite(known) &&
+        Number.isFinite(pieces) &&
+        pieces > 0 &&
+        known >= pieces
+    );
+}
+
+function fountainProgress(status, receiver) {
+    const known = status?.known ?? receiver?.known;
+    const pieces = status?.pieces ?? receiver?.pieces;
+
+    return Number.isFinite(Number(known)) &&
+        Number.isFinite(Number(pieces))
+        ? `${known} of ${pieces} pieces`
+        : "more frames are needed";
+}
+
+/* ---------- Extract decoded fountain data ---------- */
+
+async function readFountainText(receiver, status) {
+    let result;
+
+    if (typeof receiver.text === "function") {
+        result = await receiver.text();
+
+    } else if (typeof receiver.decode === "function") {
+        result = await receiver.decode();
+
+    } else if (typeof receiver.result === "function") {
+        result = await receiver.result();
+
+    } else if (typeof receiver.text === "string") {
+        result = receiver.text;
+
+    } else if (typeof status?.text === "string") {
+        result = status.text;
+    }
+
+    if (result instanceof Uint8Array) {
+        result = new TextDecoder("utf-8", {
+            fatal: true
+        }).decode(result);
+    }
+
+    if (
+        typeof result !== "string" ||
+        !result.trim()
+    ) {
+        throw new Error(
+            "The fountain-code receiver completed but did not return decoded text."
+        );
+    }
+
+    return result;
+}
+
+/* ---------- Decode fountain transfer ---------- */
+
+async function decodeFountain(text) {
+    const frames = getFountainFrames(text);
+
+    const sprocketFrames = frames.filter(isSprocketFrame);
+
+    // Try the legacy format if there are no SPRK1 frames.
+    if (sprocketFrames.length === 0) {
+        return decodeLegacyFountain(text);
+    }
+
+    const fountain = createFountainReceiver();
+
+    let status = null;
+
+    for (const frame of sprocketFrames) {
+        status = addFountainFrame(fountain, frame);
+    }
+
+    if (!await fountainIsComplete(fountain, status)) {
+        throw new Error(
+            `The transfer code is incomplete (${fountainProgress(status, fountain)}).`
+        );
+    }
+
+    return await readFountainText(fountain, status);
+}
+
+/* ---------- Token parsing ---------- */
+
+async function parseToken(text) {
+    if (
+        typeof text !== "string" ||
+        !text.trim()
+    ) {
+        throw new Error("The selected file is empty.");
+    }
+
+    let json = text.replace(/^\uFEFF/, "");
+
+    const decoded = await decodeFountain(json);
+
+    if (decoded !== null) {
+        json = decoded;
+    }
+
     let data;
-    try { data = JSON.parse(json); } catch { throw new Error("That isn’t a Scouting Sprocket token or transfer code."); }
-    if (!data || typeof data !== "object" || !Array.isArray(data.sections)) throw new Error("That file isn’t a valid token (no form sections found).");
+
+    try {
+        data = JSON.parse(json);
+    } catch {
+        throw new Error(
+            "That isn’t a Scouting Sprocket token or a complete fountain-code transfer."
+        );
+    }
+
+    if (
+        !data ||
+        typeof data !== "object" ||
+        Array.isArray(data) ||
+        !Array.isArray(data.sections)
+    ) {
+        throw new Error(
+            "That file isn’t a valid token (no form sections found)."
+        );
+    }
+
+    if (!data.sections.every(section =>
+        section &&
+        typeof section === "object" &&
+        !Array.isArray(section) &&
+        (
+            section.elements === undefined ||
+            Array.isArray(section.elements)
+        )
+    )) {
+        throw new Error(
+            "The token contains an invalid form section."
+        );
+    }
+
+    if (
+        data.responses !== undefined &&
+        !Array.isArray(data.responses)
+    ) {
+        throw new Error(
+            "The token contains invalid response data."
+        );
+    }
+
     return data;
 }
 
+/* ---------- Token information ---------- */
+
 function describe(token) {
     const sections = token.sections.length;
-    const questions = token.sections.reduce((sum, section) => sum + (Array.isArray(section.elements) ? section.elements.length : 0), 0);
-    const responses = Array.isArray(token.responses) ? token.responses.length : 0;
-    const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
-    return `“${token.name || "Untitled form"}”: ${plural(sections, "section")}, ${plural(questions, "question")}, ${plural(responses, "response")}`;
+
+    const questions = token.sections.reduce(
+        (sum, section) =>
+            sum + (
+                Array.isArray(section.elements)
+                    ? section.elements.length
+                    : 0
+            ),
+        0
+    );
+
+    const responses = Array.isArray(token.responses)
+        ? token.responses.length
+        : 0;
+
+    const plural = (number, word) =>
+        `${number} ${word}${number === 1 ? "" : "s"}`;
+
+    const name =
+        typeof token.name === "string" &&
+        token.name.trim()
+            ? token.name.trim()
+            : "Untitled form";
+
+    return `“${name}”: ${plural(sections, "section")}, ${plural(questions, "question")}, ${plural(responses, "response")}`;
 }
 
-/* ---------- Confirm, then import ---------- */
+/* ---------- Import confirmation ---------- */
+
 function confirmReplace(incoming) {
     const dialog = $("dialog");
-    $("dlgIncoming").textContent = `Importing ${describe(incoming)}.`;
-    $("dlgCurrent").textContent = current && Array.isArray(current.sections)
-        ? `Currently saved here: ${describe(current)}.`
-        : "Nothing is saved on this device yet.";
+
+    const incomingDescription =
+        `Importing ${describe(incoming)}.`;
+
+    const currentDescription =
+        current && Array.isArray(current.sections)
+            ? `Currently saved here: ${describe(current)}.`
+            : "Nothing is saved on this device yet.";
+
+    $("dlgIncoming").textContent = incomingDescription;
+    $("dlgCurrent").textContent = currentDescription;
+
+    if (typeof dialog.showModal !== "function") {
+        return Promise.resolve(
+            window.confirm(
+                `${incomingDescription}\n${currentDescription}\n\nThis replaces the saved form and responses.`
+            )
+        );
+    }
+
     return new Promise(resolve => {
-        if (typeof dialog.showModal !== "function") {
-            resolve(window.confirm(`${$("dlgIncoming").textContent}\n${$("dlgCurrent").textContent}\n\nThis replaces the saved form and responses.`));
-            return;
+        const onClose = () =>
+            resolve(dialog.returnValue === "ok");
+
+        dialog.addEventListener(
+            "close",
+            onClose,
+            { once: true }
+        );
+
+        dialog.returnValue = "cancel";
+
+        try {
+            dialog.showModal();
+
+        } catch {
+            dialog.removeEventListener("close", onClose);
+
+            resolve(
+                window.confirm(
+                    `${incomingDescription}\n${currentDescription}\n\nThis replaces the saved form and responses.`
+                )
+            );
         }
-        dialog.returnValue = "";
-        dialog.addEventListener("close", () => resolve(dialog.returnValue === "ok"), { once: true });
-        dialog.showModal();
     });
 }
 
+/* ---------- Import ---------- */
+
 async function review(text) {
-    let incoming;
-    try {
-        incoming = parseToken(text);
-    } catch (error) {
-        say(error.message, true);
+    if (!storageReady) {
+        say(
+            "The storage module did not load. Check app-storage.js.",
+            true
+        );
         return;
     }
-    if (!await confirmReplace(incoming)) {
-        say("Import cancelled. Nothing was changed.");
+
+    if (locked) {
+        say(
+            "The system is locked. Unlock it in Settings before importing.",
+            true
+        );
         return;
     }
+
+    if (isImporting) return;
+
+    isImporting = true;
+    updateControls();
+
     try {
-        SprocketStorage.importToken(incoming);
-        current = incoming;
+        const incoming = await parseToken(text);
+
+        if (!await confirmReplace(incoming)) {
+            say("Import cancelled. Nothing was changed.");
+            return;
+        }
+
+        if (locked) {
+            say(
+                "The system became locked before the import could finish.",
+                true
+            );
+            return;
+        }
+
+        if (!dependenciesAvailable()) {
+            throw new Error(
+                "The storage module did not load. Check app-storage.js."
+            );
+        }
+
+        await SprocketStorage.importToken(incoming);
+
+        applyCurrentToken(incoming);
+
         $("donePanel").hidden = false;
-        $("donePanel").scrollIntoView({ block: "start" });
+
+        $("donePanel").scrollIntoView({
+            block: "start",
+            behavior: "smooth"
+        });
+
         say("Token imported.");
+
     } catch (error) {
-        say(error instanceof Error ? error.message : "The import failed.", true);
+        say(
+            error instanceof Error
+                ? error.message
+                : "The import failed.",
+            true
+        );
+
+    } finally {
+        isImporting = false;
+        updateControls();
     }
 }
 
-/* ---------- File ---------- */
-$("file").addEventListener("change", () => { $("import").disabled = locked || !$("file").files.length; });
+/* ---------- Camera fountain frames ---------- */
+
+async function reviewFrame(text) {
+    const frame = String(text).trim();
+
+    if (!isSprocketFrame(frame)) {
+        stopScanning();
+        await review(frame);
+        return;
+    }
+
+    try {
+        receiver = receiver || createFountainReceiver();
+
+        const status = addFountainFrame(
+            receiver,
+            frame
+        );
+
+        if (!await fountainIsComplete(receiver, status)) {
+            say(
+                `Transfer received: ${fountainProgress(status, receiver)}.`
+            );
+            return;
+        }
+
+        const completed = receiver;
+        receiver = null;
+
+        const tokenText = await readFountainText(
+            completed,
+            status
+        );
+
+        stopScanning();
+
+        await review(tokenText);
+
+    } catch (error) {
+        receiver = null;
+        stopScanning();
+
+        say(
+            error instanceof Error
+                ? error.message
+                : "The fountain-code transfer could not be decoded.",
+            true
+        );
+    }
+}
+
+/* ---------- File import ---------- */
+
+$("file").addEventListener("change", updateControls);
 
 $("import").addEventListener("click", async () => {
-    const file = $("file").files[0];
-    if (!file) return say("Choose a file first.", true);
+    const file = $("file").files?.[0];
+
+    if (!file) {
+        say("Choose a file first.", true);
+        return;
+    }
+
+    stopScanning();
+
     try {
         await review(await file.text());
+
     } catch {
         say("That file couldn’t be read.", true);
     }
 });
 
-/* ---------- Camera ---------- */
-const canScan = "BarcodeDetector" in window && Boolean(navigator.mediaDevices?.getUserMedia);
+/* ---------- Camera scanning ---------- */
 
 function stopScanning() {
+    scanGeneration++;
     scanning = false;
-    if (stream) { stream.getTracks().forEach(track => track.stop()); stream = null; }
+
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+    }
+
     const video = $("camera");
+
     video.pause();
     video.srcObject = null;
     video.hidden = true;
-    $("startCamera").disabled = locked;
-    $("stopCamera").disabled = true;
+
+    updateControls();
+}
+
+async function createDetector() {
+    const Detector = window.BarcodeDetector;
+
+    if (typeof Detector.getSupportedFormats === "function") {
+        const formats = await Detector.getSupportedFormats();
+
+        if (!formats.includes("qr_code")) {
+            throw new Error(
+                "This browser’s camera scanner does not support QR codes."
+            );
+        }
+    }
+
+    return new Detector({
+        formats: ["qr_code"]
+    });
 }
 
 async function startScanning() {
+    if (
+        locked ||
+        isImporting ||
+        scanning ||
+        !cameraAvailable
+    ) {
+        return;
+    }
+
+    const generation = ++scanGeneration;
+
+    scanning = true;
+    updateControls();
+
     try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } } });
+        const detector = await createDetector();
+
+        if (generation !== scanGeneration) return;
+
+        const newStream = await navigator.mediaDevices.getUserMedia({
+            audio: false,
+            video: {
+                facingMode: { ideal: "environment" }
+            }
+        });
+
+        if (generation !== scanGeneration) {
+            newStream.getTracks().forEach(track => track.stop());
+            return;
+        }
+
+        stream = newStream;
+
         const video = $("camera");
+
         video.srcObject = stream;
         video.hidden = false;
+
         await video.play();
-        const detector = new BarcodeDetector({ formats: ["qr_code", "data_matrix", "aztec", "code_128"] });
-        scanning = true;
-        $("startCamera").disabled = true;
-        $("stopCamera").disabled = false;
-        say("Camera on. Point it at the code.");
-        while (scanning) {
+
+        if (generation !== scanGeneration) return;
+
+        say(
+            "Camera on. Point it at a token QR code or fountain-code frame."
+        );
+
+        lastFrameValue = null;
+
+        while (
+            scanning &&
+            generation === scanGeneration
+        ) {
             const codes = await detector.detect(video);
-            if (codes.length) {
-                const text = codes[0].rawValue;
-                stopScanning();
-                await review(text);
+
+            if (
+                !scanning ||
+                generation !== scanGeneration
+            ) {
                 break;
             }
-            await new Promise(resolve => requestAnimationFrame(resolve));
+
+            const rawValue = codes.find(
+                code =>
+                    typeof code.rawValue === "string" &&
+                    code.rawValue.trim()
+            )?.rawValue;
+
+            if (
+                rawValue &&
+                rawValue !== lastFrameValue
+            ) {
+                lastFrameValue = rawValue;
+
+                await reviewFrame(rawValue);
+            }
+
+            if (
+                scanning &&
+                generation === scanGeneration
+            ) {
+                await new Promise(
+                    resolve => requestAnimationFrame(resolve)
+                );
+            }
         }
+
     } catch (error) {
-        stopScanning();
-        say(error instanceof Error && error.name === "NotAllowedError" ? "Camera access was blocked. Allow it in the browser settings." : "The camera couldn’t be started.", true);
+        if (generation === scanGeneration) {
+            stopScanning();
+
+            const message =
+                error instanceof Error &&
+                error.name === "NotAllowedError"
+                    ? "Camera access was blocked. Allow it in the browser settings."
+                    : error instanceof Error && error.message
+                        ? error.message
+                        : "The camera couldn’t be started.";
+
+            say(message, true);
+        }
     }
 }
 
-$("startCamera").addEventListener("click", startScanning);
-$("stopCamera").addEventListener("click", stopScanning);
-window.addEventListener("pagehide", stopScanning);
+$("startCamera").addEventListener(
+    "click",
+    startScanning
+);
 
-/* ---------- Load ---------- */
-try { current = SprocketStorage.readToken(); } catch { current = null; }
-locked = Boolean(current?.lock?.enabled);
-if (locked) {
-    $("lockNote").hidden = false;
+$("stopCamera").addEventListener(
+    "click",
+    stopScanning
+);
+
+window.addEventListener(
+    "pagehide",
+    stopScanning
+);
+
+/* ---------- Load saved token ---------- */
+
+if (!storageReady) {
+    say(
+        "The storage module did not load. Check that app-storage.js is available beside this page.",
+        true
+    );
+
     $("file").disabled = true;
     $("import").disabled = true;
+
+} else {
+    try {
+        applyCurrentToken(
+            SprocketStorage.readToken()
+        );
+
+    } catch (error) {
+        applyCurrentToken(null);
+
+        say(
+            error instanceof Error
+                ? `Could not read the saved token: ${error.message}`
+                : "Could not read the saved token.",
+            true
+        );
+    }
 }
-if (!canScan || !window.isSecureContext) {
-    $("camHint").textContent = !canScan
-        ? "This browser can’t scan codes (iPad and iPhone Safari don’t support it). Use a file instead, or open this page in Chrome or Edge."
-        : "Camera scanning needs a secure page (HTTPS or localhost).";
+
+/* ---------- Camera availability ---------- */
+
+if (!window.isSecureContext) {
+    $("camHint").textContent =
+        "Camera scanning requires HTTPS or localhost. You can still import a file.";
+
+    $("camActions").hidden = true;
+
+} else if (!navigator.mediaDevices?.getUserMedia) {
+    $("camHint").textContent =
+        "This browser does not provide camera access. You can still import a file.";
+
+    $("camActions").hidden = true;
+
+} else if (typeof window.BarcodeDetector !== "function") {
+    $("camHint").textContent =
+        "This browser does not support built-in QR scanning. Use a file, or open this page in a browser with BarcodeDetector support.";
+
     $("camActions").hidden = true;
 }
-$("startCamera").disabled = locked;
+
+updateControls();
+
 </script>
 </body>
 </html>
