@@ -1,0 +1,275 @@
+/* Scouting Sprocket: shared side navigation.
+   Desktop (>1100px): the solid sidebar from the Data Actions page.
+   Tablets and phones (<=1100px): the same sidebar becomes a slide-in drawer opened from a hamburger bar (nav.js).
+   Colors come from each page's :root variables; the fallbacks match the palette. */
+
+:root {
+    --nav-bar-height: 56px;
+    --nav-gears: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cg fill='%23c4934b'%3E%3Ccircle cx='70' cy='70' r='36'/%3E%3Ccircle cx='70' cy='70' r='41' fill='none' stroke='%23c4934b' stroke-width='12' stroke-dasharray='10.8 10.8'/%3E%3Ccircle cx='170' cy='172' r='26'/%3E%3Ccircle cx='170' cy='172' r='30' fill='none' stroke='%23c4934b' stroke-width='9' stroke-dasharray='9.4 9.4'/%3E%3C/g%3E%3Ccircle cx='70' cy='70' r='14' fill='%23ba8a43'/%3E%3Ccircle cx='170' cy='172' r='10' fill='%23ba8a43'/%3E%3C/svg%3E");
+}
+
+/* ---------- Sidebar (desktop) ---------- */
+.layout > .sidebar {
+    width: var(--sidebar-width, 250px);
+    flex-shrink: 0;
+    padding: 28px 16px;
+    background-color: var(--sidebar, #ba8a43);
+    background-image: var(--nav-gears);
+    background-size: 240px 240px;
+    border-right: 1px solid var(--outline, #fdf6e3);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    align-self: flex-start;
+    overflow-y: auto;
+}
+
+.brand {
+    display: flow-root;
+    margin: 0 12px 32px;
+    color: var(--surface, #f1e4c4);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-decoration: none;
+}
+
+.brand-mark {
+    float: left;
+    width: 42px;
+    height: 42px;
+    margin-right: 12px;
+    object-fit: contain;
+}
+
+.brand-copy {
+    display: block;
+    overflow: hidden;
+}
+
+.brand > span:not(.brand-copy),
+.brand-copy > span {
+    display: block;
+    margin-top: 5px;
+    color: var(--muted, #3f4534);
+    font-size: .72rem;
+    font-weight: 400;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.nav-list {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.nav-link {
+    display: block;
+    padding: 12px 14px;
+    border-radius: 8px;
+    color: var(--muted, #3f4534);
+    text-decoration: none;
+}
+
+.nav-link:hover,
+.nav-link:focus-visible,
+.nav-link.active {
+    background: var(--surface, #f1e4c4);
+    color: var(--accent, #380372);
+    outline: none;
+}
+
+.nav-link:focus-visible {
+    box-shadow: 0 0 0 2px var(--accent, #380372);
+}
+
+.nav-link.active {
+    box-shadow: inset 3px 0 var(--accent, #380372);
+    font-weight: 700;
+}
+
+/* Only shown below 1100px */
+.app-bar,
+.nav-close,
+.nav-scrim {
+    display: none;
+}
+
+/* ---------- Tablets and phones: hamburger + drawer ---------- */
+@media (max-width: 1100px) {
+    .layout {
+        display: block;
+    }
+
+    /* Without JavaScript the sidebar simply stacks above the page */
+    .layout > .sidebar {
+        position: static;
+        width: auto;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--outline, #fdf6e3);
+    }
+
+    .layout > .sidebar .nav-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /* With JavaScript (nav.js adds .js-nav) it becomes a drawer */
+    .js-nav .app-bar {
+        display: flex;
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        align-items: center;
+        gap: 6px;
+        height: var(--nav-bar-height);
+        padding: 0 16px 0 6px;
+        background-color: var(--sidebar, #ba8a43);
+        background-image: var(--nav-gears);
+        background-size: 240px 240px;
+        border-bottom: 1px solid var(--outline, #fdf6e3);
+    }
+
+    .nav-toggle,
+    .nav-close {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        min-height: 48px;
+        padding: 0;
+        border: 0;
+        border-radius: 10px;
+        background: transparent;
+        color: var(--muted, #3f4534);
+        filter: none;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .nav-toggle:hover,
+    .nav-close:hover {
+        background: var(--surface, #f1e4c4);
+        filter: none;
+    }
+
+    .nav-toggle:focus-visible,
+    .nav-close:focus-visible {
+        outline: 2px solid var(--accent, #380372);
+        outline-offset: 1px;
+    }
+
+    .nav-toggle-bars,
+    .nav-toggle-bars::before,
+    .nav-toggle-bars::after {
+        display: block;
+        width: 22px;
+        height: 2px;
+        border-radius: 2px;
+        background: currentColor;
+    }
+
+    .nav-toggle-bars {
+        position: relative;
+    }
+
+    .nav-toggle-bars::before,
+    .nav-toggle-bars::after {
+        content: "";
+        position: absolute;
+        left: 0;
+    }
+
+    .nav-toggle-bars::before { top: -7px; }
+    .nav-toggle-bars::after { top: 7px; }
+
+    .app-bar-title {
+        overflow: hidden;
+        color: var(--muted, #3f4534);
+        font-size: 1.2rem;
+        font-weight: 700;
+        letter-spacing: .02em;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .js-nav .layout > .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 50;
+        width: min(340px, 86vw);
+        height: auto;
+        padding-top: 12px;
+        border-right: 1px solid var(--outline, #fdf6e3);
+        border-bottom: 0;
+        overscroll-behavior: contain;
+        transform: translateX(-100%);
+        visibility: hidden;
+        transition: transform .25s ease, visibility 0s linear .25s;
+    }
+
+    .js-nav .layout > .sidebar .nav-list {
+        grid-template-columns: 1fr;
+    }
+
+    .js-nav .layout > .sidebar .nav-link {
+        display: flex;
+        align-items: center;
+        min-height: 52px;
+        font-size: 1.05rem;
+    }
+
+    .js-nav .nav-close {
+        margin: 0 0 8px auto;
+    }
+
+    .js-nav .nav-close::before {
+        content: "\00d7";
+        font-size: 2rem;
+        line-height: 1;
+    }
+
+    .js-nav .nav-scrim {
+        display: block;
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 40;
+        background: rgba(46, 26, 20, .5);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity .25s ease, visibility 0s linear .25s;
+    }
+
+    .nav-open {
+        overflow: hidden;
+    }
+
+    .nav-open .layout > .sidebar {
+        transform: none;
+        visibility: visible;
+        box-shadow: 8px 0 32px rgba(46, 26, 20, .35);
+        transition-delay: 0s;
+    }
+
+    .nav-open .nav-scrim {
+        opacity: 1;
+        visibility: visible;
+        transition-delay: 0s;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js-nav .layout > .sidebar,
+    .js-nav .nav-scrim {
+        transition: none;
+    }
+}

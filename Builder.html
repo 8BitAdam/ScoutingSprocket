@@ -1,1654 +1,585 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="csrf-token" content="">
-  <title>Scouting Sprocket — Form Builder</title>
-
-  <style>
-    :root {
-      color-scheme: light;
-      --sidebar-width: 250px;
-      --background: #d4ceb1;
-      --sidebar: #ba8a43;
-      --surface: #f1e4c4;
-      --surface-raised: #fdf6e3;
-      --outline: #fdf6e3;
-      --text: #ba8a43;
-      --muted: #3f4534;
-      --accent: #380372;
-      --accent-hover: #280252;
-      --accent-soft: #e9def5;
-      --danger: #a33232;
-      --success: #356b4b;
-      --focus: #835ae2;
-      --shadow: 0 3px 12px rgb(63 69 52 / 8%);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: var(--background);
-      color: var(--text);
-      font-family: Arial, sans-serif;
-      line-height: 1.5;
-    }
-
-    button, input, select, textarea {
-      font: inherit;
-    }
-
-    button {
-      touch-action: manipulation;
-    }
-
-    .layout {
-      display: flex;
-      min-height: 100vh;
-    }
-
-    .sidebar {
-      width: var(--sidebar-width);
-      flex-shrink: 0;
-      padding: 28px 16px;
-      background: var(--sidebar);
-      border-right: 1px solid var(--outline);
-      line-height: normal;
-    }
-
-    .brand {
-      display: block;
-      margin: 0 12px 32px;
-      color: var(--surface);
-      font-size: 1.25rem;
-      font-weight: 700;
-      letter-spacing: .04em;
-      text-decoration: none;
-    }
-
-    .brand span {
-      display: block;
-      margin-top: 5px;
-      color: var(--muted);
-      font-size: .72rem;
-      font-weight: 400;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-    }
-
-    .nav-list {
-      display: grid;
-      gap: 6px;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
-
-    .nav-link {
-      display: block;
-      padding: 12px 14px;
-      border-radius: 8px;
-      color: var(--muted);
-      text-decoration: none;
-      transition: background .2s ease, color .2s ease;
-    }
-
-    .nav-link:hover,
-    .nav-link:focus-visible,
-    .nav-link.active {
-      background: var(--surface);
-      color: var(--text);
-      outline: none;
-    }
-
-    .nav-link.active {
-      box-shadow: inset 3px 0 var(--accent);
-    }
-
-    .content {
-      flex: 1;
-      min-width: 0;
-      padding: 48px;
-    }
-
-    .builder {
-      width: 100%;
-      max-width: 1040px;
-      margin: 0 auto;
-    }
-
-    .page-heading {
-      margin: 0 0 6px;
-      color: var(--text);
-    }
-
-    .intro {
-      margin: 0 0 22px;
-      color: var(--muted);
-    }
-
-    .panel {
-      margin: 0 0 18px;
-      padding: clamp(16px, 3vw, 26px);
-      border: 1px solid var(--outline);
-      border-radius: 14px;
-      background: var(--surface);
-      box-shadow: var(--shadow);
-    }
-
-    .panel h2 {
-      margin: 0 0 14px;
-      font-size: 1.2rem;
-    }
-
-    .panel h3 {
-      margin: 18px 0 10px;
-      font-size: 1.05rem;
-    }
-
-    .muted, .help {
-      color: var(--muted);
-    }
-
-    .help {
-      display: block;
-      margin-top: 5px;
-      font-size: .88rem;
-    }
-
-    .notice {
-      margin: 0 0 18px;
-      padding: 13px 15px;
-      border: 1px solid #c9b6df;
-      border-left: 5px solid var(--accent);
-      border-radius: 9px;
-      background: var(--accent-soft);
-      color: #352449;
-    }
-
-    .status {
-      display: none;
-      margin: 14px 0 0;
-      padding: 12px 14px;
-      border-radius: 8px;
-      overflow-wrap: anywhere;
-    }
-
-    .status.visible {
-      display: block;
-    }
-
-    .status.error {
-      color: #702323;
-      background: #f8dddd;
-      border: 1px solid #dfaaaa;
-    }
-
-    .status.success {
-      color: #214b32;
-      background: #deeee2;
-      border: 1px solid #a9cdb3;
-    }
-
-    .status.info {
-      color: #382c4b;
-      background: #eee7f6;
-      border: 1px solid #cbbbe0;
-    }
-
-    .field {
-      margin: 0 0 16px;
-    }
-
-    label {
-      display: block;
-      margin: 0 0 7px;
-      color: var(--muted);
-      font-weight: 700;
-    }
-
-    input[type="text"],
-    input[type="number"],
-    select,
-    textarea {
-      display: block;
-      width: 100%;
-      min-height: 48px;
-      padding: 11px 12px;
-      border: 1px solid #b9a77f;
-      border-radius: 8px;
-      background: var(--surface-raised);
-      color: var(--text);
-    }
-
-    textarea {
-      min-height: 90px;
-      resize: vertical;
-    }
-
-    input[type="range"] {
-      width: 100%;
-      min-height: 38px;
-      accent-color: var(--accent);
-    }
-
-    input:disabled {
-      opacity: .8;
-      background: #eee9dc;
-    }
-
-    button {
-      min-height: 48px;
-      padding: 11px 16px;
-      border: 1px solid var(--accent);
-      border-radius: 9px;
-      background: var(--accent);
-      color: #fff;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    button:hover:not(:disabled) {
-      background: var(--accent-hover);
-    }
-
-    button:disabled {
-      opacity: .55;
-      cursor: not-allowed;
-    }
-
-    button.secondary {
-      background: transparent;
-      color: var(--accent);
-    }
-
-    button.secondary:hover:not(:disabled) {
-      background: var(--accent-soft);
-    }
-
-    button:focus-visible,
-    input:focus-visible,
-    select:focus-visible,
-    textarea:focus-visible,
-    a:focus-visible {
-      outline: 3px solid var(--focus);
-      outline-offset: 2px;
-    }
-
-    .range-line {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .range-number {
-      min-width: 2.5rem;
-      text-align: center;
-      font-weight: 700;
-      color: var(--accent);
-    }
-
-    .section-title-fields {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 16px;
-    }
-
-    .section-tabs {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding: 3px 2px 13px;
-    }
-
-    .section-tab {
-      flex: 0 0 auto;
-      min-width: 52px;
-      background: transparent;
-      color: var(--accent);
-    }
-
-    .section-tab.active {
-      background: var(--accent);
-      color: #fff;
-    }
-
-    .element-list {
-      display: grid;
-      gap: 12px;
-    }
-
-    .element-card {
-      padding: 15px;
-      border: 1px solid var(--outline);
-      border-radius: 10px;
-      background: var(--surface-raised);
-    }
-
-    .element-card h4 {
-      margin: 0 0 5px;
-      color: var(--accent);
-    }
-
-    .element-card p {
-      margin: 0 0 12px;
-      overflow-wrap: anywhere;
-    }
-
-    .element-preview {
-      display: grid;
-      gap: 8px;
-      color: var(--muted);
-    }
-
-    .element-preview label {
-      font-weight: 400;
-    }
-
-    .empty-state {
-      padding: 16px;
-      border: 1px dashed #b9a77f;
-      border-radius: 9px;
-      color: var(--muted);
-    }
-
-    .option-help {
-      margin: 5px 0 0;
-      color: var(--muted);
-      font-size: .86rem;
-    }
-
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .actions button {
-      flex: 1 1 180px;
-    }
-
-    .save-button {
-      background: #4f367b;
-      border-color: #4f367b;
-    }
-
-    .save-button:hover:not(:disabled) {
-      background: #3d285f;
-    }
-
-    #jsonOutput {
-      max-height: 340px;
-      margin: 14px 0 0;
-      padding: 15px;
-      overflow: auto;
-      border-radius: 9px;
-      background: #292722;
-      color: #fdf6e3;
-      font: .88rem/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-    }
-
-    [hidden] {
-      display: none !important;
-    }
-
-    @media (max-width: 640px) {
-      .layout {
-        display: block;
-      }
-
-      .sidebar {
-        width: 100%;
-        padding: 20px 16px;
-        border-right: 0;
-        border-bottom: 1px solid var(--outline);
-      }
-
-      .brand {
-        margin-bottom: 18px;
-      }
-
-      .nav-list {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .content {
-        padding: 28px 24px;
-      }
-
-      .section-title-fields {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      html {
-        scroll-behavior: auto;
-      }
-
-      *,
-      *::before,
-      *::after {
-        transition-duration: .01ms !important;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scouting Sprocket — Form Builder</title>
+
+<!-- Fonts from the Style slide. For offline-first use, self-host these two families; the fallbacks keep the layout intact without them. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anta&family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    color-scheme: light;
+    --sidebar-width: 250px;
+    --nav-bar-height: 56px;
+    --background: #d4ceb1;
+    --sidebar: #ba8a43;
+    --surface: #f1e4c4;
+    --raised: #fdf6e3;
+    --outline: #fdf6e3;
+    --line: #b9a77f;
+    --muted: #3f4534;
+    --header: #61382d;
+    --accent: #380372;
+    --accent-hover: #280252;
+    --accent-soft: #e9def5;
+    --danger: #8d2929;
+    --success: #264f38;
+    --font-display: "Anta", "Segoe UI", system-ui, sans-serif;
+    --font-body: "M PLUS Rounded 1c", "Segoe UI", system-ui, sans-serif;
+    --gears: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cg fill='%23c4934b'%3E%3Ccircle cx='70' cy='70' r='36'/%3E%3Ccircle cx='70' cy='70' r='41' fill='none' stroke='%23c4934b' stroke-width='12' stroke-dasharray='10.8 10.8'/%3E%3Ccircle cx='170' cy='172' r='26'/%3E%3Ccircle cx='170' cy='172' r='30' fill='none' stroke='%23c4934b' stroke-width='9' stroke-dasharray='9.4 9.4'/%3E%3C/g%3E%3Ccircle cx='70' cy='70' r='14' fill='%23ba8a43'/%3E%3Ccircle cx='170' cy='172' r='10' fill='%23ba8a43'/%3E%3C/svg%3E");
+}
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; background: var(--background); color: var(--muted); font-family: var(--font-body); line-height: 1.55; }
+button, input, select { font: inherit; }
+button { touch-action: manipulation; }
+[hidden] { display: none !important; }
+.layout { display: flex; min-height: 100vh; }
+
+/* ---------- Side nav ---------- */
+.sidebar { width: var(--sidebar-width); flex-shrink: 0; padding: 28px 16px; background-color: var(--sidebar); background-image: var(--gears); background-size: 240px 240px; border-right: 1px solid var(--outline); position: sticky; top: 0; height: 100vh; align-self: flex-start; overflow-y: auto; }
+.brand { display: block; margin: 0 12px 32px; color: var(--surface); font-size: 1.25rem; font-weight: 700; letter-spacing: .04em; text-decoration: none; }
+.nav-list { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.nav-link { display: block; padding: 12px 14px; border-radius: 8px; color: var(--muted); text-decoration: none; }
+.nav-link:hover, .nav-link:focus-visible, .nav-link.active { background: var(--surface); color: var(--accent); outline: none; }
+.nav-link:focus-visible { box-shadow: 0 0 0 2px var(--accent); }
+.nav-link.active { box-shadow: inset 3px 0 var(--accent); font-weight: 700; }
+.app-bar, .nav-close, .nav-scrim { display: none; }
+
+/* ---------- Page ---------- */
+.content { flex: 1; min-width: 0; padding: 48px; }
+.builder { max-width: 820px; margin: 0 auto; }
+h1 { display: inline-block; margin: 0 0 10px; color: var(--header); font-family: var(--font-display); font-size: clamp(2.2rem, 5vw, 3rem); font-weight: 400; line-height: 1.1; }
+h1::after { content: ""; display: block; height: 10px; margin-top: 8px; border-radius: 3px; background: var(--accent); }
+.intro { margin: 0 0 24px; font-size: 1.05rem; }
+h2, h3 { margin: 0; color: var(--header); font-family: var(--font-display); font-weight: 400; }
+h2 { font-size: clamp(1.4rem, 3vw, 1.9rem); line-height: 1.15; }
+h3 { font-size: 1.3rem; }
+.panel { margin: 0 0 18px; padding: clamp(18px, 3vw, 28px); border: 1px solid var(--outline); border-radius: 16px; background: var(--surface); }
+.hint { margin: 6px 0 20px; font-size: .95rem; }
+
+/* Fields */
+.field { margin: 0 0 16px; }
+label, .label { display: block; margin: 0 0 6px; font-weight: 700; font-size: .95rem; }
+.opt { font-weight: 400; }
+input[type="text"], input[type="number"], select { display: block; width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--raised); color: var(--muted); }
+input:focus-visible, select:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.row { display: flex; gap: 8px; margin-bottom: 8px; }
+
+/* Buttons */
+button { min-height: 48px; padding: 10px 20px; border: 1px solid var(--accent); border-radius: 10px; background: var(--accent); color: #fff; font-weight: 700; cursor: pointer; }
+button:hover:not(:disabled) { background: var(--accent-hover); }
+button:disabled { opacity: .5; cursor: not-allowed; }
+button.secondary { background: transparent; color: var(--accent); }
+button.secondary:hover:not(:disabled) { background: var(--accent-soft); }
+.icon-btn { flex: 0 0 48px; padding: 0; font-size: 1.5rem; line-height: 1; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* Status */
+.status { margin: 12px 0 0; padding: 11px 14px; border-radius: 10px; overflow-wrap: anywhere; }
+.status:empty { display: none; }
+.status.error { background: #f8dddd; color: #702323; }
+.status.success { background: #deeee2; color: var(--success); }
+
+/* Builder */
+.tabs { display: flex; gap: 8px; margin: 16px 0; padding-bottom: 4px; overflow-x: auto; }
+.tab { flex: 0 0 auto; background: transparent; color: var(--accent); }
+.tab[aria-pressed="true"] { background: var(--accent); color: #fff; }
+.q-list { display: grid; gap: 10px; margin-bottom: 22px; }
+.q-card { padding: 14px 16px; border: 1px solid var(--outline); border-radius: 12px; background: var(--raised); }
+.q-card strong { display: block; overflow-wrap: anywhere; }
+.q-card small { display: block; margin-top: 2px; overflow-wrap: anywhere; }
+.badge { display: inline-block; margin-bottom: 4px; padding: 1px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: .8rem; font-weight: 700; }
+.empty { padding: 18px; border: 2px dashed var(--line); border-radius: 12px; text-align: center; }
+.add-card { padding: 20px; border-radius: 14px; background: var(--raised); }
+.add-card h3 { margin-bottom: 14px; }
+
+/* Save bar */
+.save-bar { position: sticky; bottom: 12px; z-index: 5; padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--raised); box-shadow: 0 6px 20px rgba(46, 26, 20, .25); }
+.save-bar .actions { align-items: center; }
+.counts { flex: 1 1 160px; font-weight: 700; }
+.json { margin: 18px 0 0; }
+.json summary { cursor: pointer; font-weight: 700; }
+pre { max-height: 320px; margin: 10px 0 0; padding: 14px; overflow: auto; border-radius: 10px; background: #292722; color: #fdf6e3; font: .85rem/1.5 ui-monospace, Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* ---------- Vertical tablets and phones: hamburger + drawer ---------- */
+@media (max-width: 1100px) {
+    .layout { display: block; }
+    .content { padding: 28px 24px 40px; }
+    .sidebar { position: static; width: auto; height: auto; border-right: 0; border-bottom: 1px solid var(--outline); }
+    .nav-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .js-nav .app-bar { display: flex; position: sticky; top: 0; z-index: 20; align-items: center; gap: 6px; height: var(--nav-bar-height); padding: 0 16px 0 6px; background-color: var(--sidebar); background-image: var(--gears); background-size: 240px 240px; border-bottom: 1px solid var(--outline); }
+    .nav-toggle, .nav-close { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; min-height: 48px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: var(--muted); -webkit-tap-highlight-color: transparent; }
+    .nav-toggle:hover:not(:disabled), .nav-close:hover:not(:disabled) { background: var(--surface); }
+    .nav-toggle-bars, .nav-toggle-bars::before, .nav-toggle-bars::after { display: block; width: 22px; height: 2px; border-radius: 2px; background: currentColor; }
+    .nav-toggle-bars { position: relative; }
+    .nav-toggle-bars::before, .nav-toggle-bars::after { content: ""; position: absolute; left: 0; }
+    .nav-toggle-bars::before { top: -7px; }
+    .nav-toggle-bars::after { top: 7px; }
+    .app-bar-title { overflow: hidden; color: var(--muted); font-size: 1.2rem; font-weight: 700; letter-spacing: .02em; text-overflow: ellipsis; white-space: nowrap; }
+    .js-nav .sidebar { position: fixed; top: 0; bottom: 0; left: 0; z-index: 50; width: min(340px, 86vw); height: auto; padding-top: 12px; border-bottom: 0; overscroll-behavior: contain; transform: translateX(-100%); visibility: hidden; transition: transform .25s ease, visibility 0s linear .25s; }
+    .js-nav .nav-list { grid-template-columns: 1fr; }
+    .js-nav .nav-link { display: flex; align-items: center; min-height: 52px; font-size: 1.05rem; }
+    .js-nav .nav-close { margin: 0 0 8px auto; }
+    .js-nav .nav-close::before { content: "\00d7"; font-size: 2rem; line-height: 1; }
+    .js-nav .nav-scrim { display: block; position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 40; background: rgba(46, 26, 20, .5); opacity: 0; visibility: hidden; transition: opacity .25s ease, visibility 0s linear .25s; }
+    .nav-open { overflow: hidden; }
+    .nav-open .sidebar { transform: none; visibility: visible; box-shadow: 8px 0 32px rgba(46, 26, 20, .35); transition-delay: 0s; }
+    .nav-open .nav-scrim { opacity: 1; visibility: visible; transition-delay: 0s; }
+}
+@media (max-width: 640px) {
+    .content { padding: 20px 16px 32px; }
+    .pair { grid-template-columns: 1fr; }
+    .actions > button { flex: 1 1 100%; }
+}
+@media (prefers-reduced-motion: reduce) { .js-nav .sidebar, .js-nav .nav-scrim { transition: none; } }
+</style>
 </head>
 
 <body>
-  <div class="layout">
-    <aside class="sidebar">
-      <a class="brand" href="./">
-        Scouting Sprocket
-        <span>Admin View</span>
-      </a>
-
-      <nav aria-label="Main navigation">
-        <ul class="nav-list">
-          <li><a class="nav-link" href="./">Dashboard</a></li>
-          <li><a class="nav-link" href="./Forms.html">Forms</a></li>
-          <li><a class="nav-link active" href="./Builder.html" aria-current="page">Builder</a></li>
-          <li><a class="nav-link" href="./Export.html">Export</a></li>
-          <li><a class="nav-link" href="./Import.html">Import</a></li>
-          <li><a class="nav-link" href="./Data_actions.html">Data Actions</a></li>
-          <li><a class="nav-link" href="./Settings.html">Settings</a></li>
-        </ul>
-      </nav>
+<div class="layout">
+    <aside class="sidebar" id="site-nav">
+        <a class="brand" href="./">Scouting Sprocket</a>
+        <nav aria-label="Main navigation">
+            <ul class="nav-list">
+                <li><a class="nav-link" href="./">Dashboard</a></li>
+                <li><a class="nav-link" href="./Forms.html">Forms</a></li>
+                <li><a class="nav-link active" href="./Builder.html" aria-current="page">Builder</a></li>
+                <li><a class="nav-link" href="./Export.html">Export</a></li>
+                <li><a class="nav-link" href="./Import.html">Import</a></li>
+                <li><a class="nav-link" href="./Data_actions.html">Data Actions</a></li>
+                <li><a class="nav-link" href="./Settings.html">Settings</a></li>
+            </ul>
+        </nav>
     </aside>
 
     <main class="content">
-      <div class="builder">
-        <h1 class="page-heading">Form Builder</h1>
-        <p class="intro">
-          Build a scouting form by creating sections and appending questions.
-        </p>
+        <div class="builder">
+            <h1>Form Builder</h1>
+            <p class="intro">Name your form, list its sections, then add questions.</p>
 
-        <div class="notice" role="note">
-          <strong>Append-only form:</strong>
-          Once the sections are created, their titles and existing questions
-          cannot be changed or removed here. You can continue adding questions
-          to any section.
-        </div>
+            <!-- Step 1 -->
+            <section class="panel" id="setupPanel" aria-labelledby="setupHeading">
+                <h2 id="setupHeading">Set up your form</h2>
+                <p class="hint">Sections can’t be renamed or removed once you start, but you can keep adding questions to any of them.</p>
+                <div class="field">
+                    <label for="formName">Form name</label>
+                    <input id="formName" type="text" maxlength="100" value="New Scouting Form" autocomplete="off">
+                </div>
+                <div class="field">
+                    <span class="label" id="sectionsLabel">Sections</span>
+                    <div id="sectionRows" role="group" aria-labelledby="sectionsLabel"></div>
+                </div>
+                <div class="actions">
+                    <button id="addSection" class="secondary" type="button">Add section</button>
+                    <button id="start" type="button">Start building</button>
+                </div>
+                <p id="setupStatus" class="status" role="status"></p>
+            </section>
 
-        <section class="panel" aria-labelledby="setupHeading">
-          <h2 id="setupHeading">1. Form setup</h2>
+            <!-- Step 2 -->
+            <section class="panel" id="buildPanel" aria-labelledby="formTitle" hidden>
+                <h2 id="formTitle"></h2>
+                <div id="tabs" class="tabs" role="group" aria-label="Sections"></div>
+                <div id="list" class="q-list"></div>
 
-          <div class="field">
-            <label for="formName">Form name</label>
-            <input
-              id="formName"
-              type="text"
-              maxlength="100"
-              value="New Scouting Form"
-              autocomplete="off"
-            >
-          </div>
+                <div class="add-card">
+                    <h3>Add a question</h3>
+                    <div class="pair" style="margin-top:14px">
+                        <div class="field">
+                            <label for="type">Question type</label>
+                            <select id="type"></select>
+                        </div>
+                        <div class="field">
+                            <label for="prompt">Question</label>
+                            <input id="prompt" type="text" maxlength="300" placeholder="e.g. What is the team number?" autocomplete="off">
+                        </div>
+                    </div>
+                    <div id="extras"></div>
+                    <button id="addQuestion" type="button">Add question</button>
+                    <p id="addStatus" class="status" role="status"></p>
+                </div>
+            </section>
 
-          <div class="field">
-            <div class="range-line">
-              <label for="sectionCount">Number of sections</label>
-              <output
-                id="sectionCountValue"
-                class="range-number"
-                for="sectionCount"
-              >3</output>
+            <!-- Save -->
+            <div class="save-bar" id="saveBar" hidden>
+                <div class="actions">
+                    <span class="counts" id="counts"></span>
+                    <button id="download" class="secondary" type="button">Download JSON</button>
+                    <button id="save" type="button">Save form</button>
+                </div>
+                <p id="saveStatus" class="status" role="status"></p>
             </div>
-
-            <input
-              id="sectionCount"
-              type="range"
-              min="1"
-              max="9"
-              value="3"
-              step="1"
-            >
-
-            <small class="help">
-              Choose 1–9 sections. The default is 3.
-            </small>
-          </div>
-
-          <div id="sectionTitles" class="section-title-fields"></div>
-
-          <button id="createSections" type="button">
-            Create sections
-          </button>
-
-          <p id="setupStatus" class="status" role="status" aria-live="polite"></p>
-        </section>
-
-        <section
-          class="panel"
-          id="editorPanel"
-          hidden
-          aria-labelledby="editorHeading"
-        >
-          <h2 id="editorHeading">2. Add questions</h2>
-
-          <p class="notice">
-            Select a section, configure a question, and append it.
-            Existing elements are displayed as read-only previews.
-          </p>
-
-          <div
-            id="sectionTabs"
-            class="section-tabs"
-            aria-label="Choose a section"
-          ></div>
-
-          <h3 id="currentSectionHeading"></h3>
-
-          <div id="elementList" class="element-list"></div>
-
-          <div class="field" style="margin-top:20px">
-            <label for="elementType">Element type</label>
-
-            <select id="elementType">
-              <option value="Short Answer">Short Answer</option>
-              <option value="Paragraphs">Paragraphs</option>
-              <option value="Checkboxes">Checkboxes</option>
-              <option value="Dropdown">Dropdown</option>
-              <option value="Linear Scale">Linear Scale</option>
-              <option value="Rating">Rating</option>
-              <option value="Multiple Choice Grid">Multiple Choice Grid</option>
-              <option value="Checkbox Grid">Checkbox Grid</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="answerType">Answer type</label>
-
-            <select id="answerType">
-              <option value="text">Text</option>
-              <option value="name">Name</option>
-              <option value="number">Number</option>
-              <option value="email">Email</option>
-              <option value="date">Date</option>
-            </select>
-
-            <small class="help">
-              Used for short-answer and paragraph questions. Questions are optional.
-            </small>
-          </div>
-
-          <div class="field">
-            <label for="elementPrompt">Question / prompt</label>
-
-            <input
-              id="elementPrompt"
-              type="text"
-              maxlength="300"
-              placeholder="e.g. What is the team number?"
-              autocomplete="off"
-            >
-          </div>
-
-          <div id="elementOptions" class="field"></div>
-
-          <button id="addElement" type="button">
-            Add element to section
-          </button>
-
-          <p id="editorStatus" class="status" role="status" aria-live="polite"></p>
-        </section>
-
-        <section class="panel" aria-labelledby="outputHeading">
-          <h2 id="outputHeading">3. Save form</h2>
-
-          <p class="muted">
-            Save to Token stores the form dictionary in this browser.
-          </p>
-
-          <div class="actions">
-            <button
-              id="refreshJson"
-              class="secondary"
-              type="button"
-            >
-              Refresh JSON preview
-            </button>
-
-            <button
-              id="downloadJson"
-              class="secondary"
-              type="button"
-            >
-              Download JSON
-            </button>
-
-            <button
-              id="saveToken"
-              class="save-button"
-              type="button"
-            >
-              Save to Token
-            </button>
-          </div>
-
-          <pre id="jsonOutput" aria-live="polite">Create your sections to begin.</pre>
-
-          <p id="saveStatus" class="status" role="status" aria-live="polite"></p>
-        </section>
-      </div>
+            <details class="json" id="jsonBox" hidden>
+                <summary>View JSON</summary>
+                <pre id="json"></pre>
+            </details>
+        </div>
     </main>
-  </div>
+</div>
 
-  <script src="./app-storage.js"></script>
-  <script>
-    "use strict";
+<script>
+/* Hamburger drawer for the side nav on tablets and phones (<= 1100px). */
+(function () {
+    var side = document.getElementById("site-nav");
+    var content = document.querySelector(".content");
+    var query = window.matchMedia("(max-width: 1100px)");
+    var open = false;
+    document.documentElement.classList.add("js-nav");
 
-    /*
-      Form payload schema:
+    var current = side.querySelector(".nav-link.active");
+    var bar = document.createElement("header");
+    bar.className = "app-bar";
+    var toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "nav-toggle";
+    toggle.setAttribute("aria-label", "Open menu");
+    toggle.setAttribute("aria-controls", side.id);
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.innerHTML = '<span class="nav-toggle-bars" aria-hidden="true"></span>';
+    var title = document.createElement("span");
+    title.className = "app-bar-title";
+    title.textContent = current ? current.textContent.trim() : document.title;
+    bar.appendChild(toggle);
+    bar.appendChild(title);
 
-      {
-        name: string,
-        sections: [{
-          title: string,
-          elements: [{
-            type: string,
-            dataType: string,
-            prompt: string,
-            ...
-          }]
-        }]
-      }
+    var closeButton = document.createElement("button");
+    closeButton.type = "button";
+    closeButton.className = "nav-close";
+    closeButton.setAttribute("aria-label", "Close menu");
+    side.insertBefore(closeButton, side.firstChild);
 
-    */
+    var scrim = document.createElement("div");
+    scrim.className = "nav-scrim";
+    scrim.setAttribute("aria-hidden", "true");
+    document.body.insertBefore(bar, document.body.firstChild);
+    document.body.appendChild(scrim);
 
-    const LIMITS = Object.freeze({
-      formName: 100,
-      sectionTitle: 100,
-      prompt: 300,
-      sections: 9,
-      elementsPerSection: 100,
-      totalElements: 500,
-      optionCount: 50,
-      optionLength: 100,
-      gridRows: 20,
-      gridColumns: 20,
-      payloadBytes: 1024 * 1024
-    });
-
-    let formData = {
-      name: "New Scouting Form",
-      sections: []
-    };
-
-    let activeSectionIndex = 0;
-    let sectionsCreated = false;
-    let saving = false;
-
-    const byId = id => document.getElementById(id);
-
-    const formNameInput = byId("formName");
-    const sectionCountInput = byId("sectionCount");
-    const sectionCountOutput = byId("sectionCountValue");
-    const sectionTitlesContainer = byId("sectionTitles");
-    const editorPanel = byId("editorPanel");
-    const elementTypeSelect = byId("elementType");
-    const answerTypeSelect = byId("answerType");
-
-    function setStatus(id, message, kind = "info") {
-      const node = byId(id);
-
-      node.textContent = message;
-      node.className = `status visible ${kind}`;
+    function setOpen(next, restoreFocus) {
+        if (next === open) return;
+        open = next;
+        document.body.classList.toggle("nav-open", open);
+        toggle.setAttribute("aria-expanded", String(open));
+        [content, bar].forEach(function (el) {
+            if (open) el.setAttribute("inert", "");
+            else el.removeAttribute("inert");
+        });
+        if (open) closeButton.focus();
+        else if (restoreFocus !== false) toggle.focus();
     }
+    toggle.addEventListener("click", function () { setOpen(true); });
+    closeButton.addEventListener("click", function () { setOpen(false); });
+    scrim.addEventListener("click", function () { setOpen(false); });
+    side.addEventListener("click", function (e) { if (e.target.closest("a")) setOpen(false, false); });
+    document.addEventListener("keydown", function (e) { if (open && e.key === "Escape") setOpen(false); });
 
-    function clearStatus(id) {
-      const node = byId(id);
+    var startX = null;
+    side.addEventListener("touchstart", function (e) { startX = e.touches[0].clientX; }, { passive: true });
+    side.addEventListener("touchend", function (e) {
+        if (startX !== null && e.changedTouches[0].clientX - startX < -60) setOpen(false);
+        startX = null;
+    }, { passive: true });
 
-      node.textContent = "";
-      node.className = "status";
-    }
+    function onBreakpoint(e) { if (!e.matches) setOpen(false, false); }
+    if (query.addEventListener) query.addEventListener("change", onBreakpoint);
+    else if (query.addListener) query.addListener(onBreakpoint);
+    window.addEventListener("pageshow", function () { setOpen(false, false); });
+})();
+</script>
 
-    function makeField(
-      labelText,
-      id,
-      value = "",
-      placeholder = "",
-      inputType = "text"
-    ) {
-      const wrapper = document.createElement("div");
-      wrapper.className = "field";
+<script src="./app-storage.js"></script>
+<script>
+"use strict";
 
-      const label = document.createElement("label");
-      label.htmlFor = id;
-      label.textContent = labelText;
+/* Saved form shape (unchanged, so Forms, Data Actions, Export etc. keep working):
+   { name, sections: [{ title, elements: [{ type, prompt, dataType, ...type-specific }] }], responses } */
 
-      const input = document.createElement("input");
-      input.id = id;
-      input.type = inputType;
-      input.value = value;
-      input.placeholder = placeholder;
+const LIMITS = { formName: 100, sectionTitle: 100, prompt: 300, sections: 9, perSection: 100,
+                 total: 500, options: 50, optionLength: 100, grid: 20, bytes: 1024 * 1024 };
+const TYPES = ["Short Answer", "Paragraphs", "Checkboxes", "Dropdown", "Linear Scale", "Rating",
+               "Multiple Choice Grid", "Checkbox Grid"];
+const ANSWER_TYPES = [["text", "Text"], ["name", "Name"], ["number", "Number"], ["email", "Email"], ["date", "Date"]];
 
-      if (inputType === "text") {
-        input.maxLength = LIMITS.optionLength;
-      }
+const $ = id => document.getElementById(id);
+let draft = ["Section 1", "Section 2", "Section 3"];
+let form = { name: "", sections: [] };
+let active = 0;
+let started = false;
 
-      wrapper.append(label, input);
+function say(id, message, kind = "info") {
+    const node = $(id);
+    node.textContent = message;
+    node.className = `status ${kind}`;
+}
+const el = (tag, className, text) => {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+};
+function field(label, id, { value = "", placeholder = "", type = "text", hint = "", optional = false } = {}) {
+    const wrap = el("div", "field");
+    const lab = el("label", "", label);
+    lab.htmlFor = id;
+    if (optional) lab.append(el("span", "opt", " (optional)"));
+    const input = el("input");
+    Object.assign(input, { id, type, value, placeholder, autocomplete: "off" });
+    if (type === "text") input.maxLength = LIMITS.optionLength;
+    wrap.append(lab, input);
+    if (hint) wrap.append(el("small", "", hint));
+    return wrap;
+}
 
-      return {
-        wrapper,
-        input
-      };
-    }
-
-    function renderSectionTitleInputs() {
-      const count = Number(sectionCountInput.value);
-
-      sectionCountOutput.value = String(count);
-      sectionCountOutput.textContent = String(count);
-
-      sectionTitlesContainer.replaceChildren();
-
-      for (let index = 0; index < count; index += 1) {
-        const field = makeField(
-          `Section ${index + 1} title`,
-          `sectionTitle${index + 1}`,
-          `Section ${index + 1}`
-        );
-
-        field.input.maxLength = LIMITS.sectionTitle;
-        field.input.required = true;
-
-        sectionTitlesContainer.append(field.wrapper);
-      }
-    }
-
-    function splitChoices(rawValue, label) {
-      const values = rawValue
-        .split(",")
-        .map(value => value.trim())
-        .filter(Boolean);
-
-      if (values.length < 2) {
-        throw new Error(`${label} needs at least two comma-separated values.`);
-      }
-
-      if (values.length > LIMITS.optionCount) {
-        throw new Error(
-          `${label} cannot contain more than ${LIMITS.optionCount} values.`
-        );
-      }
-
-      if (values.some(value => value.length > LIMITS.optionLength)) {
-        throw new Error(
-          `Each ${label.toLowerCase()} value must be ${LIMITS.optionLength} characters or fewer.`
-        );
-      }
-
-      const normalized = values.map(value => value.toLocaleLowerCase());
-
-      if (new Set(normalized).size !== values.length) {
-        throw new Error(`${label} cannot contain duplicate values.`);
-      }
-
-      return values;
-    }
-
-    function renderOptionControls() {
-      const type = elementTypeSelect.value;
-      const host = byId("elementOptions");
-
-      host.replaceChildren();
-
-      if (type === "Checkboxes" || type === "Dropdown") {
-        const field = makeField(
-          "Options",
-          "choiceOptions",
-          "",
-          "Option A, Option B, Option C"
-        );
-
-        const help = document.createElement("small");
-        help.className = "help";
-        help.textContent =
-          "Separate choices with commas. Duplicate choices are not allowed.";
-
-        field.wrapper.append(help);
-        host.append(field.wrapper);
-
-      } else if (type === "Linear Scale" || type === "Rating") {
-        const row = document.createElement("div");
-        row.className = "section-title-fields";
-
-        const minField = makeField(
-          "Minimum value",
-          "scaleMin",
-          "1",
-          "1",
-          "number"
-        );
-
-        const maxField = makeField(
-          "Maximum value",
-          "scaleMax",
-          type === "Rating" ? "5" : "10",
-          "5",
-          "number"
-        );
-
-        minField.input.step = "1";
-        maxField.input.step = "1";
-
-        minField.input.min = "0";
-        minField.input.max = "100";
-
-        maxField.input.min = "1";
-        maxField.input.max = "100";
-
-        row.append(minField.wrapper, maxField.wrapper);
+/* ---------- Step 1: setup ---------- */
+function renderRows(focusLast) {
+    const host = $("sectionRows");
+    host.replaceChildren();
+    draft.forEach((title, i) => {
+        const row = el("div", "row");
+        const input = el("input");
+        Object.assign(input, { type: "text", value: title, maxLength: LIMITS.sectionTitle });
+        input.setAttribute("aria-label", `Section ${i + 1} title`);
+        input.addEventListener("input", () => { draft[i] = input.value; });
+        const remove = el("button", "secondary icon-btn", "×");
+        remove.type = "button";
+        remove.disabled = draft.length === 1;
+        remove.setAttribute("aria-label", `Remove section ${i + 1}`);
+        remove.addEventListener("click", () => { draft.splice(i, 1); renderRows(); });
+        row.append(input, remove);
         host.append(row);
-
-        const minLabel = makeField(
-          "Minimum label (optional)",
-          "scaleMinLabel",
-          "",
-          "e.g. Needs work"
-        );
-
-        const maxLabel = makeField(
-          "Maximum label (optional)",
-          "scaleMaxLabel",
-          "",
-          "e.g. Excellent"
-        );
-
-        host.append(minLabel.wrapper, maxLabel.wrapper);
-
-      } else if (
-        type === "Multiple Choice Grid" ||
-        type === "Checkbox Grid"
-      ) {
-        const rows = makeField(
-          "Grid row labels",
-          "gridRows",
-          "",
-          "Front, Back, Climb"
-        );
-
-        const columns = makeField(
-          "Grid column labels",
-          "gridColumns",
-          "",
-          "Poor, Average, Good"
-        );
-
-        const help = document.createElement("small");
-        help.className = "help";
-
-        help.textContent =
-          `Separate values with commas. Each grid supports at most ` +
-          `${LIMITS.gridRows} rows and ${LIMITS.gridColumns} columns.`;
-
-        host.append(
-          rows.wrapper,
-          columns.wrapper,
-          help
-        );
-      }
-    }
-
-    function getTotalElements() {
-      return formData.sections.reduce(
-        (sum, section) => sum + section.elements.length,
-        0
-      );
-    }
-
-    function renderJson() {
-      byId("jsonOutput").textContent =
-        JSON.stringify(formData, null, 2);
-    }
-
-    function appendPreviewText(parent, tagName, text) {
-      const node = document.createElement(tagName);
-
-      node.textContent = text;
-      parent.append(node);
-
-      return node;
-    }
-
-    function renderElementPreview(element, parent) {
-      const preview = document.createElement("div");
-      preview.className = "element-preview";
-
-      if (element.type === "Short Answer") {
-        const input = document.createElement("input");
-
-        input.type = "text";
-        input.placeholder = "Short answer response";
-        input.disabled = true;
-
-        preview.append(input);
-
-      } else if (element.type === "Paragraphs") {
-        const textarea = document.createElement("textarea");
-
-        textarea.placeholder = "Long answer response";
-        textarea.disabled = true;
-
-        preview.append(textarea);
-
-      } else if (element.type === "Checkboxes") {
-        element.options.forEach(option => {
-          const label = document.createElement("label");
-          const checkbox = document.createElement("input");
-
-          checkbox.type = "checkbox";
-          checkbox.disabled = true;
-
-          label.append(
-            checkbox,
-            document.createTextNode(` ${option}`)
-          );
-
-          preview.append(label);
-        });
-
-      } else if (element.type === "Dropdown") {
-        const select = document.createElement("select");
-        select.disabled = true;
-
-        const placeholder = document.createElement("option");
-        placeholder.textContent = "Choose an option";
-
-        select.append(placeholder);
-
-        element.options.forEach(option => {
-          const item = document.createElement("option");
-          item.textContent = option;
-          select.append(item);
-        });
-
-        preview.append(select);
-
-      } else if (
-        element.type === "Linear Scale" ||
-        element.type === "Rating"
-      ) {
-        const range = document.createElement("input");
-
-        range.type = "range";
-        range.min = String(element.min);
-        range.max = String(element.max);
-        range.disabled = true;
-
-        const labels = document.createElement("small");
-
-        labels.textContent =
-          `${element.minLabel || element.min} — ` +
-          `${element.maxLabel || element.max}`;
-
-        preview.append(range, labels);
-
-      } else {
-        appendPreviewText(
-          preview,
-          "small",
-          `Rows: ${element.rows.join(", ")}`
-        );
-
-        appendPreviewText(
-          preview,
-          "small",
-          `Columns: ${element.columns.join(", ")}`
-        );
-      }
-
-      parent.append(preview);
-    }
-
-    function renderEditor() {
-      const tabs = byId("sectionTabs");
-
-      tabs.replaceChildren();
-
-      formData.sections.forEach((section, index) => {
-        const button = document.createElement("button");
-
-        button.type = "button";
-
-        button.className =
-          `section-tab${index === activeSectionIndex ? " active" : ""}`;
-
-        button.textContent = `${index + 1}. ${section.title}`;
-
-        button.setAttribute(
-          "aria-pressed",
-          String(index === activeSectionIndex)
-        );
-
-        button.addEventListener("click", () => {
-          activeSectionIndex = index;
-
-          renderEditor();
-          clearStatus("editorStatus");
-        });
-
-        tabs.append(button);
-      });
-
-      const section = formData.sections[activeSectionIndex];
-
-      byId("currentSectionHeading").textContent =
-        section.title;
-
-      const list = byId("elementList");
-
-      list.replaceChildren();
-
-      if (section.elements.length === 0) {
-        appendPreviewText(
-          list,
-          "div",
-          "No questions in this section yet. Add the first one below."
-        ).className = "empty-state";
-      }
-
-      section.elements.forEach((element, index) => {
-        const card = document.createElement("article");
-
-        card.className = "element-card";
-
-        appendPreviewText(
-          card,
-          "h4",
-          `${index + 1}. ${element.type} · ${element.dataType}`
-        );
-
-        appendPreviewText(
-          card,
-          "p",
-          element.prompt
-        );
-
-        renderElementPreview(element, card);
-
-        list.append(card);
-      });
-    }
-
-    function buildElement() {
-      const type = elementTypeSelect.value;
-      const prompt = byId("elementPrompt").value.trim();
-
-      if (!prompt) {
-        throw new Error(
-          "Enter a question or prompt before adding the element."
-        );
-      }
-
-      if (prompt.length > LIMITS.prompt) {
-        throw new Error(
-          `The prompt must be ${LIMITS.prompt} characters or fewer.`
-        );
-      }
-
-      const element = {
-        type,
-        prompt
-      };
-
-      switch (type) {
-        case "Short Answer":
-        case "Paragraphs":
-          element.answerType = answerTypeSelect.value;
-          element.dataType = answerTypeSelect.value === "number"
-            ? "number"
-            : "string";
-          break;
-
-        case "Checkboxes":
-          element.dataType = "string[]";
-
-          element.options = splitChoices(
-            byId("choiceOptions").value,
-            "Options"
-          );
-
-          break;
-
-        case "Dropdown":
-          element.dataType = "string";
-
-          element.options = splitChoices(
-            byId("choiceOptions").value,
-            "Options"
-          );
-
-          break;
-
-        case "Linear Scale":
-        case "Rating": {
-          const minRaw = byId("scaleMin").value.trim();
-          const maxRaw = byId("scaleMax").value.trim();
-
-          if (minRaw === "" || maxRaw === "") {
-            throw new Error("Enter both scale bounds.");
-          }
-
-          const min = Number(minRaw);
-          const max = Number(maxRaw);
-
-          if (
-            !Number.isSafeInteger(min) ||
-            !Number.isSafeInteger(max)
-          ) {
-            throw new Error("Scale bounds must be whole numbers.");
-          }
-
-          if (min < 0 || max > 100 || max <= min) {
-            throw new Error(
-              "Use a minimum of at least 0 and a maximum greater than the minimum (maximum 100)."
-            );
-          }
-
-          element.dataType = "number";
-          element.min = min;
-          element.max = max;
-
-          element.minLabel =
-            byId("scaleMinLabel").value.trim();
-
-          element.maxLabel =
-            byId("scaleMaxLabel").value.trim();
-
-          if (
-            element.minLabel.length > LIMITS.optionLength ||
-            element.maxLabel.length > LIMITS.optionLength
-          ) {
-            throw new Error(
-              "Scale labels must be 100 characters or fewer."
-            );
-          }
-
-          break;
-        }
-
-        case "Multiple Choice Grid":
-        case "Checkbox Grid": {
-          element.dataType =
-            type === "Multiple Choice Grid"
-              ? "object<string, string>"
-              : "object<string, string[]>";
-
-          element.rows = splitChoices(
-            byId("gridRows").value,
-            "Grid rows"
-          );
-
-          element.columns = splitChoices(
-            byId("gridColumns").value,
-            "Grid columns"
-          );
-
-          if (element.rows.length > LIMITS.gridRows) {
-            throw new Error(
-              `A grid can have at most ${LIMITS.gridRows} rows.`
-            );
-          }
-
-          if (element.columns.length > LIMITS.gridColumns) {
-            throw new Error(
-              `A grid can have at most ${LIMITS.gridColumns} columns.`
-            );
-          }
-
-          break;
-        }
-
+    });
+    $("addSection").disabled = draft.length >= LIMITS.sections;
+    if (focusLast) host.lastChild.querySelector("input").select();
+}
+
+$("addSection").addEventListener("click", () => {
+    draft.push(`Section ${draft.length + 1}`);
+    renderRows(true);
+});
+
+$("start").addEventListener("click", () => {
+    const name = $("formName").value.trim();
+    const titles = draft.map(title => title.trim());
+    if (!name) return say("setupStatus", "Give your form a name.", "error");
+    if (titles.some(title => !title)) return say("setupStatus", "Every section needs a title.", "error");
+    if (new Set(titles.map(title => title.toLocaleLowerCase())).size !== titles.length)
+        return say("setupStatus", "Section titles must be different from each other.", "error");
+
+    form = { name, sections: titles.map(title => ({ title, elements: [] })) };
+    started = true;
+    active = 0;
+    $("setupPanel").hidden = true;
+    ["buildPanel", "saveBar", "jsonBox"].forEach(id => { $(id).hidden = false; });
+    render();
+    $("buildPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+/* ---------- Step 2: questions ---------- */
+function describe(e) {
+    switch (e.type) {
+        case "Checkboxes": case "Dropdown":
+            return `Options: ${e.options.join(", ")}`;
+        case "Linear Scale": case "Rating":
+            return `${e.min} to ${e.max}` + (e.minLabel || e.maxLabel ? ` (${e.minLabel || e.min} to ${e.maxLabel || e.max})` : "");
+        case "Multiple Choice Grid": case "Checkbox Grid":
+            return `${e.rows.length} rows × ${e.columns.length} columns`;
         default:
-          throw new Error("Unsupported element type.");
-      }
-
-      return element;
+            return `Answer: ${e.answerType}`;
     }
+}
 
-    function validateFormData() {
-      const name = formData.name.trim();
+function total() {
+    return form.sections.reduce((sum, section) => sum + section.elements.length, 0);
+}
 
-      if (!name || name.length > LIMITS.formName) {
-        throw new Error(
-          "The form name must contain 1–100 characters."
-        );
-      }
+function render() {
+    $("formTitle").textContent = form.name;
 
-      if (
-        !Array.isArray(formData.sections) ||
-        formData.sections.length < 1 ||
-        formData.sections.length > LIMITS.sections
-      ) {
-        throw new Error(
-          "The form must contain between 1 and 9 sections."
-        );
-      }
+    const tabs = $("tabs");
+    tabs.replaceChildren();
+    form.sections.forEach((section, i) => {
+        const tab = el("button", "tab secondary", `${section.title} (${section.elements.length})`);
+        tab.type = "button";
+        tab.setAttribute("aria-pressed", String(i === active));
+        tab.addEventListener("click", () => { active = i; render(); say("addStatus", "", "info"); });
+        tabs.append(tab);
+    });
 
-      if (getTotalElements() > LIMITS.totalElements) {
-        throw new Error(
-          `A form cannot contain more than ${LIMITS.totalElements} elements.`
-        );
-      }
+    const list = $("list");
+    list.replaceChildren();
+    const { elements } = form.sections[active];
+    if (!elements.length) list.append(el("div", "empty", "No questions in this section yet. Add the first one below."));
+    elements.forEach(e => {
+        const card = el("article", "q-card");
+        card.append(el("span", "badge", e.type), el("strong", "", e.prompt), el("small", "", describe(e)));
+        list.append(card);
+    });
 
-      for (const section of formData.sections) {
-        if (
-          typeof section.title !== "string" ||
-          !section.title.trim() ||
-          section.title.length > LIMITS.sectionTitle
-        ) {
-          throw new Error("A section has an invalid title.");
-        }
+    const count = total();
+    $("counts").textContent = `${count} question${count === 1 ? "" : "s"} in ${form.sections.length} section${form.sections.length === 1 ? "" : "s"}`;
+    $("json").textContent = JSON.stringify(form, null, 2);
+}
 
-        if (
-          !Array.isArray(section.elements) ||
-          section.elements.length > LIMITS.elementsPerSection
-        ) {
-          throw new Error(
-            `Section "${section.title}" has too many elements.`
-          );
-        }
+function renderExtras() {
+    const type = $("type").value;
+    const host = $("extras");
+    host.replaceChildren();
 
-        for (const element of section.elements) {
-          if (
-            !element ||
-            typeof element.prompt !== "string" ||
-            !element.prompt.trim() ||
-            element.prompt.length > LIMITS.prompt
-          ) {
-            throw new Error("A question has an invalid prompt.");
-          }
-
-          if (
-            typeof element.type !== "string" ||
-            typeof element.dataType !== "string"
-          ) {
-            throw new Error(
-              "A question is missing its element type or answer data type."
-            );
-          }
-
-          if (
-            (element.type === "Checkboxes" ||
-             element.type === "Dropdown") &&
-            (!Array.isArray(element.options) ||
-             element.options.length < 2)
-          ) {
-            throw new Error(
-              "A choice question has invalid options."
-            );
-          }
-
-          if (
-            (element.type === "Linear Scale" ||
-             element.type === "Rating") &&
-            (!Number.isSafeInteger(element.min) ||
-             !Number.isSafeInteger(element.max) ||
-             element.max <= element.min)
-          ) {
-            throw new Error(
-              "A scale question has invalid bounds."
-            );
-          }
-
-          if (
-            (element.type === "Multiple Choice Grid" ||
-             element.type === "Checkbox Grid") &&
-            (!Array.isArray(element.rows) ||
-             !Array.isArray(element.columns) ||
-             !element.rows.length ||
-             !element.columns.length)
-          ) {
-            throw new Error(
-              "A grid question has invalid rows or columns."
-            );
-          }
-        }
-      }
-
-      const serialized = JSON.stringify(formData);
-
-      const byteLength =
-        new TextEncoder().encode(serialized).length;
-
-      if (byteLength > LIMITS.payloadBytes) {
-        throw new Error(
-          "The form is too large to submit (maximum 1 MiB)."
-        );
-      }
-
-      return serialized;
+    if (type === "Short Answer" || type === "Paragraphs") {
+        const wrap = el("div", "field");
+        const lab = el("label", "", "Answer type");
+        lab.htmlFor = "answerType";
+        const select = el("select");
+        select.id = "answerType";
+        ANSWER_TYPES.forEach(([value, label]) => select.append(new Option(label, value)));
+        wrap.append(lab, select);
+        host.append(wrap);
+    } else if (type === "Checkboxes" || type === "Dropdown") {
+        host.append(field("Options", "options", { placeholder: "Option A, Option B, Option C", hint: "Separate choices with commas." }));
+    } else if (type === "Linear Scale" || type === "Rating") {
+        const range = el("div", "pair");
+        range.append(
+            field("Lowest value", "scaleMin", { value: "1", type: "number" }),
+            field("Highest value", "scaleMax", { value: type === "Rating" ? "5" : "10", type: "number" }));
+        const labels = el("div", "pair");
+        labels.append(
+            field("Lowest label", "scaleMinLabel", { placeholder: "e.g. Needs work", optional: true }),
+            field("Highest label", "scaleMaxLabel", { placeholder: "e.g. Excellent", optional: true }));
+        host.append(range, labels);
+    } else {
+        const grid = el("div", "pair");
+        grid.append(
+            field("Rows", "gridRows", { placeholder: "Front, Back, Climb", hint: "Separate with commas." }),
+            field("Columns", "gridColumns", { placeholder: "Poor, Average, Good", hint: "Separate with commas." }));
+        host.append(grid);
     }
+}
 
-    async function saveToToken() {
-      if (saving) return;
+function splitChoices(raw, label, max = LIMITS.options) {
+    const values = raw.split(",").map(value => value.trim()).filter(Boolean);
+    if (values.length < 2) throw new Error(`${label} need at least two comma-separated values.`);
+    if (values.length > max) throw new Error(`${label} can have at most ${max} values.`);
+    if (values.some(value => value.length > LIMITS.optionLength))
+        throw new Error(`Each value in ${label.toLowerCase()} must be ${LIMITS.optionLength} characters or fewer.`);
+    if (new Set(values.map(value => value.toLocaleLowerCase())).size !== values.length)
+        throw new Error(`${label} can’t contain duplicates.`);
+    return values;
+}
 
-      clearStatus("saveStatus");
+function buildElement() {
+    const type = $("type").value;
+    const prompt = $("prompt").value.trim();
+    const val = id => $(id).value.trim();
+    if (!prompt) throw new Error("Type the question first.");
+    const e = { type, prompt };
 
-      if (!sectionsCreated) {
-        setStatus(
-          "saveStatus",
-          "Create the form sections before saving.",
-          "error"
-        );
+    if (type === "Short Answer" || type === "Paragraphs") {
+        e.answerType = val("answerType");
+        e.dataType = e.answerType === "number" ? "number" : "string";
+    } else if (type === "Checkboxes" || type === "Dropdown") {
+        e.dataType = type === "Checkboxes" ? "string[]" : "string";
+        e.options = splitChoices(val("options"), "Options");
+    } else if (type === "Linear Scale" || type === "Rating") {
+        if (val("scaleMin") === "" || val("scaleMax") === "") throw new Error("Enter the lowest and highest values.");
+        const min = Number(val("scaleMin"));
+        const max = Number(val("scaleMax"));
+        if (!Number.isSafeInteger(min) || !Number.isSafeInteger(max)) throw new Error("Scale values must be whole numbers.");
+        if (min < 0 || max > 100 || max <= min) throw new Error("The lowest value must be 0 or more, and the highest must be above it (up to 100).");
+        Object.assign(e, { dataType: "number", min, max, minLabel: val("scaleMinLabel"), maxLabel: val("scaleMaxLabel") });
+        if (e.minLabel.length > LIMITS.optionLength || e.maxLabel.length > LIMITS.optionLength)
+            throw new Error("Scale labels must be 100 characters or fewer.");
+    } else {
+        e.dataType = type === "Multiple Choice Grid" ? "object<string, string>" : "object<string, string[]>";
+        e.rows = splitChoices(val("gridRows"), "Rows", LIMITS.grid);
+        e.columns = splitChoices(val("gridColumns"), "Columns", LIMITS.grid);
+    }
+    return e;
+}
 
-        return;
-      }
+$("type").addEventListener("change", () => { renderExtras(); say("addStatus", "", "info"); });
 
-      try {
-        formData.name = formNameInput.value.trim();
+$("addQuestion").addEventListener("click", () => {
+    try {
+        const section = form.sections[active];
+        if (section.elements.length >= LIMITS.perSection) throw new Error(`A section can have at most ${LIMITS.perSection} questions.`);
+        if (total() >= LIMITS.total) throw new Error(`A form can have at most ${LIMITS.total} questions.`);
+        section.elements.push(buildElement());
+        $("prompt").value = "";
+        render();
+        say("addStatus", `Added to “${section.title}”.`, "success");
+        $("prompt").focus();
+    } catch (error) {
+        say("addStatus", error.message, "error");
+    }
+});
 
-        let currentToken = {};
-        try {
-          currentToken = SprocketStorage.readToken();
-        } catch {
-          currentToken = {};
+/* ---------- Save ---------- */
+function validate() {
+    const name = form.name.trim();
+    if (!name || name.length > LIMITS.formName) throw new Error("The form name must be 1–100 characters.");
+    if (form.sections.length < 1 || form.sections.length > LIMITS.sections) throw new Error("The form needs 1 to 9 sections.");
+    if (total() > LIMITS.total) throw new Error(`A form can have at most ${LIMITS.total} questions.`);
+    for (const section of form.sections) {
+        if (!section.title.trim() || section.title.length > LIMITS.sectionTitle) throw new Error("A section has an invalid title.");
+        if (section.elements.length > LIMITS.perSection) throw new Error(`“${section.title}” has too many questions.`);
+        for (const e of section.elements) {
+            if (!e.prompt.trim() || e.prompt.length > LIMITS.prompt) throw new Error("A question has an invalid prompt.");
+            if (!e.type || !e.dataType) throw new Error("A question is missing its type.");
         }
-        const updatedForm = JSON.parse(validateFormData());
-        const token = {
-          ...currentToken,
-          ...updatedForm,
-          responses: Array.isArray(currentToken.responses)
-            ? currentToken.responses
-            : []
-        };
+    }
+    const payload = JSON.stringify(form);
+    if (new TextEncoder().encode(payload).length > LIMITS.bytes) throw new Error("The form is too large (maximum 1 MiB).");
+    return payload;
+}
 
-        saving = true;
-
-        const button = byId("saveToken");
-
+$("save").addEventListener("click", () => {
+    const button = $("save");
+    try {
+        if (!started) throw new Error("Start building the form first.");
+        const payload = JSON.parse(validate());
+        let existing = {};
+        try { existing = SprocketStorage.readToken(); } catch { existing = {}; }
         button.disabled = true;
-        button.textContent = "Saving…";
-
-        setStatus(
-          "saveStatus",
-          "Saving form to this browser…",
-          "info"
-        );
-
-        SprocketStorage.saveToken(token, true);
-
-        setStatus(
-          "saveStatus",
-          "Form saved to this browser.",
-          "success"
-        );
-
-      } catch (error) {
-        const message =
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred while saving.";
-
-        setStatus(
-          "saveStatus",
-          `Save failed: ${message}`,
-          "error"
-        );
-
-      } finally {
-        saving = false;
-
-        const button = byId("saveToken");
-
+        SprocketStorage.saveToken({
+            ...existing,
+            ...payload,
+            responses: Array.isArray(existing.responses) ? existing.responses : []
+        }, true);
+        say("saveStatus", "Form saved to this browser.", "success");
+    } catch (error) {
+        say("saveStatus", `Couldn’t save: ${error.message}`, "error");
+    } finally {
         button.disabled = false;
-        button.textContent = "Save to Token";
-      }
     }
+});
 
-    sectionCountInput.addEventListener("input", () => {
-      if (!sectionsCreated) {
-        renderSectionTitleInputs();
-      }
-    });
+$("download").addEventListener("click", () => {
+    try {
+        const blob = new Blob([validate()], { type: "application/json;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = el("a");
+        link.href = url;
+        link.download = "scouting-sprocket-form.json";
+        document.body.append(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+        say("saveStatus", "JSON file downloaded.", "success");
+    } catch (error) {
+        say("saveStatus", error.message, "error");
+    }
+});
 
-    byId("createSections").addEventListener("click", () => {
-      clearStatus("setupStatus");
+// Read-only snapshot for integrations and debugging.
+window.getFormData = () => JSON.parse(JSON.stringify(form));
 
-      if (sectionsCreated) {
-        setStatus(
-          "setupStatus",
-          "Sections have already been created. This form is append-only; start a new form to define a different section layout.",
-          "error"
-        );
-
-        return;
-      }
-
-      const titles = Array.from(
-        sectionTitlesContainer.querySelectorAll("input"),
-        input => input.value.trim()
-      );
-
-      if (
-        titles.length < 1 ||
-        titles.length > LIMITS.sections ||
-        titles.some(
-          title =>
-            !title ||
-            title.length > LIMITS.sectionTitle
-        )
-      ) {
-        setStatus(
-          "setupStatus",
-          "Every section needs a title between 1 and 100 characters.",
-          "error"
-        );
-
-        return;
-      }
-
-      const normalized = titles.map(
-        title => title.toLocaleLowerCase()
-      );
-
-      if (new Set(normalized).size !== normalized.length) {
-        setStatus(
-          "setupStatus",
-          "Section titles must be unique.",
-          "error"
-        );
-
-        return;
-      }
-
-      const formName = formNameInput.value.trim();
-
-      if (!formName || formName.length > LIMITS.formName) {
-        setStatus(
-          "setupStatus",
-          "The form name must contain 1–100 characters.",
-          "error"
-        );
-
-        return;
-      }
-
-      formData = {
-        name: formName,
-        sections: titles.map(title => ({
-          title,
-          elements: []
-        }))
-      };
-
-      sectionsCreated = true;
-      activeSectionIndex = 0;
-
-      formNameInput.disabled = true;
-      sectionCountInput.disabled = true;
-
-      sectionTitlesContainer
-        .querySelectorAll("input")
-        .forEach(input => {
-          input.disabled = true;
-        });
-
-      byId("createSections").disabled = true;
-
-      editorPanel.hidden = false;
-
-      renderEditor();
-      renderJson();
-
-      setStatus(
-        "setupStatus",
-        "Sections created. You can now append questions to each section.",
-        "success"
-      );
-
-      editorPanel.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
-    });
-
-    elementTypeSelect.addEventListener("change", () => {
-      renderOptionControls();
-      clearStatus("editorStatus");
-    });
-
-    byId("addElement").addEventListener("click", () => {
-      clearStatus("editorStatus");
-
-      if (
-        !sectionsCreated ||
-        !formData.sections[activeSectionIndex]
-      ) {
-        setStatus(
-          "editorStatus",
-          "Create sections before adding questions.",
-          "error"
-        );
-
-        return;
-      }
-
-      try {
-        if (
-          formData.sections[activeSectionIndex].elements.length >=
-          LIMITS.elementsPerSection
-        ) {
-          throw new Error(
-            `A section cannot contain more than ${LIMITS.elementsPerSection} questions.`
-          );
-        }
-
-        if (getTotalElements() >= LIMITS.totalElements) {
-          throw new Error(
-            `A form cannot contain more than ${LIMITS.totalElements} questions.`
-          );
-        }
-
-        const element = buildElement();
-
-        formData.sections[activeSectionIndex]
-          .elements.push(element);
-
-        byId("elementPrompt").value = "";
-
-        renderEditor();
-        renderJson();
-
-        setStatus(
-          "editorStatus",
-          "Element appended to this section.",
-          "success"
-        );
-
-      } catch (error) {
-        setStatus(
-          "editorStatus",
-          error instanceof Error
-            ? error.message
-            : "Could not add this element.",
-          "error"
-        );
-      }
-    });
-
-    byId("refreshJson").addEventListener("click", () => {
-      if (sectionsCreated) {
-        formData.name = formNameInput.value.trim();
-      }
-
-      renderJson();
-    });
-
-    byId("downloadJson").addEventListener("click", () => {
-      try {
-        if (!sectionsCreated) {
-          throw new Error(
-            "Create sections before exporting the form."
-          );
-        }
-
-        formData.name = formNameInput.value.trim();
-
-        const payload = validateFormData();
-
-        const blob = new Blob(
-          [payload],
-          { type: "application/json;charset=utf-8" }
-        );
-
-        const objectUrl = URL.createObjectURL(blob);
-        const anchor = document.createElement("a");
-
-        anchor.href = objectUrl;
-        anchor.download = "scouting-sprocket-form.json";
-
-        document.body.append(anchor);
-        anchor.click();
-        anchor.remove();
-
-        URL.revokeObjectURL(objectUrl);
-
-        setStatus(
-          "saveStatus",
-          "JSON export created.",
-          "success"
-        );
-
-      } catch (error) {
-        setStatus(
-          "saveStatus",
-          error instanceof Error
-            ? error.message
-            : "Could not export the form.",
-          "error"
-        );
-      }
-    });
-
-    byId("saveToken").addEventListener(
-      "click",
-      saveToToken
-    );
-
-    // Public read-only snapshot for integrations/debugging.
-    window.getFormData = function getFormData() {
-      return JSON.parse(JSON.stringify(formData));
-    };
-
-    // Initial setup.
-    renderSectionTitleInputs();
-    renderOptionControls();
-    renderJson();
-  </script>
+TYPES.forEach(type => $("type").append(new Option(type, type)));
+renderRows();
+renderExtras();
+</script>
 </body>
 </html>

@@ -1,625 +1,553 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scouting Sprocket — Data Actions</title>
-    <style>
-        :root {
-            color-scheme: light;
-            --sidebar-width: 250px;
-            --background: #d4ceb1;
-            --sidebar: #ba8a43;
-            --surface: #f1e4c4;
-            --surface-raised: #fdf6e3;
-            --outline: #fdf6e3;
-            --line: rgba(63, 69, 52, .18);
-            --text: #ba8a43;
-            --muted: #3f4534;
-            --accent: #380372;
-            --accent-soft: rgba(56, 3, 114, .1);
-            --danger: #8d2929;
-            --shadow: 0 1px 2px rgba(63, 69, 52, .12), 0 4px 14px rgba(63, 69, 52, .08);
-        }
-        * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            min-width: 320px;
-            min-height: 100vh;
-            background: var(--background);
-            color: var(--muted);
-            font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-        }
-        button, input, select { font: inherit; }
-        button {
-            min-height: 42px;
-            padding: 9px 16px;
-            border: 1px solid var(--accent);
-            border-radius: 8px;
-            background: var(--accent);
-            color: var(--surface-raised);
-            font-weight: 700;
-            cursor: pointer;
-        }
-        button:hover { filter: brightness(1.15); }
-        button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible {
-            outline: 2px solid var(--accent);
-            outline-offset: 2px;
-        }
-        input, select {
-            width: 100%;
-            min-height: 42px;
-            padding: 9px 10px;
-            border: 1px solid var(--line);
-            border-radius: 8px;
-            background: var(--surface-raised);
-            color: var(--muted);
-        }
-        .layout { display: flex; min-height: 100vh; }
-        .sidebar {
-            width: var(--sidebar-width);
-            flex-shrink: 0;
-            padding: 28px 16px;
-            background: var(--sidebar);
-            border-right: 1px solid var(--outline);
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            align-self: flex-start;
-        }
-        .brand {
-            display: block;
-            margin: 0 12px 32px;
-            color: var(--surface);
-            font-size: 1.25rem;
-            font-weight: 700;
-            letter-spacing: .04em;
-            text-decoration: none;
-        }
-        .brand span {
-            display: block;
-            margin-top: 5px;
-            color: var(--muted);
-            font-size: .72rem;
-            font-weight: 400;
-            letter-spacing: .12em;
-            text-transform: uppercase;
-        }
-        .nav-list { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
-        .nav-link {
-            display: block;
-            padding: 12px 14px;
-            border-radius: 8px;
-            color: var(--muted);
-            text-decoration: none;
-        }
-        .nav-link:hover, .nav-link:focus-visible, .nav-link.active {
-            background: var(--surface);
-            color: var(--accent);
-            outline: none;
-        }
-        .nav-link.active { box-shadow: inset 3px 0 var(--accent); font-weight: 700; }
-        .content { flex: 1; min-width: 0; padding: 36px 40px 56px; }
-        .workspace { max-width: 1240px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scouting Sprocket — Data Actions</title>
 
-        /* Page header */
-        .page-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px; }
-        h1 { margin: 0 0 4px; color: var(--muted); font-size: 1.75rem; letter-spacing: -.01em; }
-        h2 { margin: 0; color: var(--muted); font-size: 1.05rem; }
-        .intro, .help { margin: 0; color: var(--muted); opacity: .8; font-size: .9rem; }
-        .meta-chip {
-            padding: 6px 12px;
-            border-radius: 999px;
-            background: var(--accent-soft);
-            color: var(--accent);
-            font-size: .82rem;
-            font-weight: 700;
-        }
+<!-- Fonts from the Style slide. For offline-first use, self-host these two families; the fallbacks keep the layout intact without them. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anta&family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
 
-        /* Status toast (visible wherever you are on the page) */
-        .status {
-            position: fixed;
-            right: 24px;
-            bottom: 24px;
-            z-index: 10;
-            max-width: 360px;
-            padding: 12px 16px;
-            border-left: 4px solid var(--accent);
-            border-radius: 8px;
-            background: var(--surface-raised);
-            box-shadow: var(--shadow);
-            color: var(--muted);
-            font-size: .9rem;
-        }
-        .status:empty { display: none; }
+<style>
+:root {
+    color-scheme: light;
+    --sidebar-width: 250px;
+    --nav-bar-height: 56px;
+    --background: #d4ceb1;
+    --sidebar: #ba8a43;
+    --surface: #f1e4c4;
+    --raised: #fdf6e3;
+    --outline: #fdf6e3;
+    --line: #b9a77f;
+    --grid: rgba(63, 69, 52, .16);
+    --muted: #3f4534;
+    --header: #61382d;
+    --accent: #380372;
+    --accent-hover: #280252;
+    --accent-soft: #e9def5;
+    --danger: #8d2929;
+    --font-display: "Anta", "Segoe UI", system-ui, sans-serif;
+    --font-body: "M PLUS Rounded 1c", "Segoe UI", system-ui, sans-serif;
+    --gears: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cg fill='%23c4934b'%3E%3Ccircle cx='70' cy='70' r='36'/%3E%3Ccircle cx='70' cy='70' r='41' fill='none' stroke='%23c4934b' stroke-width='12' stroke-dasharray='10.8 10.8'/%3E%3Ccircle cx='170' cy='172' r='26'/%3E%3Ccircle cx='170' cy='172' r='30' fill='none' stroke='%23c4934b' stroke-width='9' stroke-dasharray='9.4 9.4'/%3E%3C/g%3E%3Ccircle cx='70' cy='70' r='14' fill='%23ba8a43'/%3E%3Ccircle cx='170' cy='172' r='10' fill='%23ba8a43'/%3E%3C/svg%3E");
+}
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; background: var(--background); color: var(--muted); font-family: var(--font-body); line-height: 1.55; }
+button, input, select { font: inherit; }
+button { touch-action: manipulation; }
+[hidden] { display: none !important; }
+.layout { display: flex; min-height: 100vh; }
 
-        /* Panels, ordered like a dashboard: filters → KPIs/charts → records → setup */
-        .panel {
-            margin: 0;
-            padding: clamp(16px, 2.4vw, 24px);
-            border: 1px solid var(--outline);
-            border-radius: 14px;
-            background: var(--surface);
-            box-shadow: var(--shadow);
-        }
-        .panel-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 16px; }
-        #filterPanel { order: 1; }
-        #summaryPanel { order: 2; }
-        #recordsPanel { order: 3; }
-        #configPanel { order: 4; }
-        .field-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
-        label { display: block; margin-bottom: 6px; color: var(--muted); font-weight: 700; font-size: .88rem; }
-        .choice { display: flex; align-items: center; gap: 6px; margin: 0; font-weight: 400; }
-        .choice input { width: auto; min-height: auto; accent-color: var(--accent); }
+/* ---------- Side nav ---------- */
+.sidebar { width: var(--sidebar-width); flex-shrink: 0; padding: 28px 16px; background-color: var(--sidebar); background-image: var(--gears); background-size: 240px 240px; border-right: 1px solid var(--outline); position: sticky; top: 0; height: 100vh; align-self: flex-start; overflow-y: auto; }
+.brand { display: block; margin: 0 12px 32px; color: var(--surface); font-size: 1.25rem; font-weight: 700; letter-spacing: .04em; text-decoration: none; }
+.nav-list { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.nav-link { display: block; padding: 12px 14px; border-radius: 8px; color: var(--muted); text-decoration: none; }
+.nav-link:hover, .nav-link:focus-visible, .nav-link.active { background: var(--surface); color: var(--accent); outline: none; }
+.nav-link:focus-visible { box-shadow: 0 0 0 2px var(--accent); }
+.nav-link.active { box-shadow: inset 3px 0 var(--accent); font-weight: 700; }
+.app-bar, .nav-close, .nav-scrim { display: none; }
 
-        /* Collapsible setup */
-        #configPanel summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-        #configPanel summary::-webkit-details-marker { display: none; }
-        #configPanel summary::after { content: "Show"; color: var(--accent); font-weight: 700; font-size: .85rem; }
-        #configPanel[open] summary::after { content: "Hide"; }
-        #configPanel[open] summary { margin-bottom: 12px; }
-        .configuration { display: grid; gap: 0; margin-top: 12px; }
-        .config-row {
-            display: grid;
-            grid-template-columns: minmax(180px, 1fr) 150px 130px 2fr;
-            gap: 10px;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid var(--line);
-        }
-        .config-row:last-child { border-bottom: 0; }
-        .config-prompt { color: var(--muted); font-weight: 700; }
-        .config-label {
-            margin: 0 0 4px;
-            font-size: .75rem;
-            font-weight: 400;
-            text-transform: uppercase;
-        }
+/* ---------- Page ---------- */
+.content { flex: 1; min-width: 0; padding: 48px; }
+.workspace { max-width: 1100px; margin: 0 auto; display: grid; gap: 18px; }
+.head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; }
+h1 { display: inline-block; margin: 0 0 10px; color: var(--header); font-family: var(--font-display); font-size: clamp(2.2rem, 5vw, 3rem); font-weight: 400; line-height: 1.1; }
+h1::after { content: ""; display: block; height: 10px; margin-top: 8px; border-radius: 3px; background: var(--accent); }
+h2, h3 { margin: 0; color: var(--header); font-family: var(--font-display); font-weight: 400; }
+h2 { font-size: clamp(1.4rem, 3vw, 1.9rem); line-height: 1.15; }
+h3 { font-size: 1.15rem; }
+.intro { margin: 0; font-size: 1.05rem; }
+.hint { margin: 0 0 14px; font-size: .95rem; }
+.chip-count { padding: 5px 14px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: .9rem; font-weight: 700; }
+.panel { margin: 0; padding: clamp(18px, 3vw, 28px); border: 1px solid var(--outline); border-radius: 16px; background: var(--surface); }
+.panel-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
 
-        /* Tables */
-        .table-wrap { overflow: auto; max-height: 460px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-raised); }
-        table { width: 100%; border-collapse: collapse; color: var(--muted); font-size: .9rem; }
-        th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
-        th { position: sticky; top: 0; background: var(--surface-raised); box-shadow: 0 1px 0 var(--line); font-size: .82rem; }
-        tbody tr:nth-child(even), tr:nth-child(even) td { background: rgba(241, 228, 196, .45); }
-        tr:hover td { background: var(--accent-soft); }
-        td.num { font-variant-numeric: tabular-nums; }
-        .empty { padding: 24px; color: var(--muted); opacity: .75; text-align: center; }
+/* Buttons, fields */
+button { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 10px 22px; border: 1px solid var(--accent); border-radius: 10px; background: var(--accent); color: #fff; font-weight: 700; cursor: pointer; }
+button:hover:not(:disabled) { background: var(--accent-hover); }
+button.secondary { background: transparent; color: var(--accent); }
+button.secondary:hover:not(:disabled) { background: var(--accent-soft); }
+button.small { min-height: 40px; padding: 6px 14px; font-size: .9rem; }
+button:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+select { display: block; width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--raised); color: var(--muted); }
+label { display: block; margin: 0 0 6px; font-weight: 700; font-size: .9rem; }
+.fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
 
-        /* KPI cards */
-        .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 18px; }
-        .kpi {
-            padding: 16px 18px;
-            border: 1px solid var(--outline);
-            border-top: 4px solid var(--accent);
-            border-radius: 10px;
-            background: var(--surface-raised);
-        }
-        .kpi strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--accent); font-size: 1.8rem; line-height: 1.2; font-variant-numeric: tabular-nums; }
-        .kpi span { color: var(--muted); font-size: .82rem; }
+/* Toast */
+.toast { position: fixed; left: 50%; bottom: 20px; z-index: 30; max-width: min(480px, calc(100vw - 32px)); padding: 12px 18px; transform: translateX(-50%); border-radius: 12px; background: var(--raised); box-shadow: 0 6px 20px rgba(46, 26, 20, .3); border-left: 5px solid var(--accent); overflow-wrap: anywhere; }
+.toast:empty { display: none; }
+.toast.error { border-left-color: var(--danger); color: var(--danger); }
 
-        /* Charts */
-        #summary { margin-bottom: 18px; }
-        .chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 18px; }
-        .chart-panel { min-width: 0; padding: 16px; border: 1px solid var(--outline); border-radius: 10px; background: var(--surface-raised); }
-        .chart-panel h3 { margin: 0 0 12px; color: var(--muted); font-size: .95rem; }
-        .chart {
-            display: flex;
-            align-items: end;
-            gap: 10px;
-            height: 230px;
-            padding: 8px 8px 0;
-            border-bottom: 1px solid var(--muted);
-            background: repeating-linear-gradient(to top, transparent 0, transparent 49px, var(--line) 49px, var(--line) 50px);
-            overflow-x: auto;
-        }
-        .chart:empty::after { content: "No data to chart."; margin: auto; color: var(--muted); opacity: .6; font-size: .85rem; }
-        .bar { display: flex; flex: 1; min-width: 38px; flex-direction: column; justify-content: end; align-items: center; gap: 4px; height: 100%; }
-        .bar-value { font-size: .75rem; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
-        .bar-fill {
-            width: 100%;
-            max-width: 56px;
-            min-height: 2px;
-            border-radius: 6px 6px 0 0;
-            background: linear-gradient(to top, var(--accent), #6a2fb0);
-            transition: height .4s ease;
-        }
-        .bar:hover .bar-fill { filter: brightness(1.2); }
-        .bar-label { max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .75rem; padding-top: 6px; }
-        .chart-labels { display: none; }
-        .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+/* Summary */
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 18px; }
+.kpi { padding: 16px 18px; border-radius: 12px; background: var(--raised); }
+.kpi strong { display: block; overflow: hidden; color: var(--header); font-family: var(--font-display); font-size: 2rem; font-weight: 400; line-height: 1.15; text-overflow: ellipsis; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.kpi span { font-size: .9rem; font-weight: 700; }
+.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 16px; margin-bottom: 20px; }
+.chart-card { min-width: 0; padding: 16px; border-radius: 12px; background: var(--raised); }
+.chart-card .panel-head { margin-bottom: 10px; }
+.chart-card select { width: auto; max-width: 100%; min-height: 40px; padding: 6px 10px; }
+.chart { display: flex; align-items: flex-end; gap: 10px; height: 240px; padding: 8px 8px 0; border-bottom: 1px solid var(--muted); background: repeating-linear-gradient(to top, transparent 0, transparent 49px, var(--grid) 49px, var(--grid) 50px); overflow-x: auto; }
+.chart:empty::after { content: "Nothing to chart yet."; margin: auto; opacity: .7; }
+.bar { display: flex; flex: 1; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; min-width: 44px; height: 100%; }
+.bar-value { color: var(--accent); font-size: .8rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.bar-fill { width: 100%; max-width: 56px; min-height: 2px; border-radius: 6px 6px 0 0; background: var(--accent); }
+.bar-label { max-width: 84px; padding-top: 6px; overflow: hidden; font-size: .8rem; text-overflow: ellipsis; white-space: nowrap; }
 
-        @media (prefers-reduced-motion: reduce) { .bar-fill { transition: none; } }
-        @media (max-width: 900px) { .sidebar { position: static; height: auto; } }
-        @media (max-width: 640px) {
-            .layout { display: block; }
-            .sidebar { width: 100%; padding: 20px 16px; border-right: 0; border-bottom: 1px solid var(--outline); }
-            .brand { margin-bottom: 18px; }
-            .nav-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-            .content { padding: 24px 16px 48px; }
-            .config-row { grid-template-columns: 1fr; }
-            .chart-grid { grid-template-columns: 1fr; }
-        }
-    </style>
+/* Tables */
+.table-wrap { max-height: 460px; overflow: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--raised); }
+table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+th, td { padding: 10px 14px; border-bottom: 1px solid var(--grid); text-align: left; white-space: nowrap; }
+th { position: sticky; top: 0; background: var(--raised); box-shadow: 0 1px 0 var(--line); font-size: .85rem; }
+tbody tr:nth-child(even) td { background: rgba(241, 228, 196, .5); }
+td.num { font-variant-numeric: tabular-nums; }
+.empty { padding: 24px; text-align: center; }
+.sub { margin: 20px 0 10px; }
+
+/* Field setup */
+#configPanel summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 48px; cursor: pointer; list-style: none; }
+#configPanel summary::-webkit-details-marker { display: none; }
+#configPanel summary::after { content: "Show"; color: var(--accent); font-weight: 700; }
+#configPanel[open] summary::after { content: "Hide"; }
+#configPanel[open] summary { margin-bottom: 6px; }
+.config-row { display: grid; grid-template-columns: minmax(0, 1fr) 170px 130px; gap: 12px; align-items: end; padding: 14px 0; border-top: 1px solid var(--line); }
+.config-row strong { display: block; overflow-wrap: anywhere; }
+.config-row small { display: block; opacity: .85; }
+.save-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 16px; }
+
+/* ---------- Vertical tablets and phones: hamburger + drawer ---------- */
+@media (max-width: 1100px) {
+    .layout { display: block; }
+    .content { padding: 28px 24px 40px; }
+    .sidebar { position: static; width: auto; height: auto; border-right: 0; border-bottom: 1px solid var(--outline); }
+    .nav-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .js-nav .app-bar { display: flex; position: sticky; top: 0; z-index: 20; align-items: center; gap: 6px; height: var(--nav-bar-height); padding: 0 16px 0 6px; background-color: var(--sidebar); background-image: var(--gears); background-size: 240px 240px; border-bottom: 1px solid var(--outline); }
+    .nav-toggle, .nav-close { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; min-height: 48px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: var(--muted); -webkit-tap-highlight-color: transparent; }
+    .nav-toggle:hover:not(:disabled), .nav-close:hover:not(:disabled) { background: var(--surface); }
+    .nav-toggle-bars, .nav-toggle-bars::before, .nav-toggle-bars::after { display: block; width: 22px; height: 2px; border-radius: 2px; background: currentColor; }
+    .nav-toggle-bars { position: relative; }
+    .nav-toggle-bars::before, .nav-toggle-bars::after { content: ""; position: absolute; left: 0; }
+    .nav-toggle-bars::before { top: -7px; }
+    .nav-toggle-bars::after { top: 7px; }
+    .app-bar-title { overflow: hidden; color: var(--muted); font-size: 1.2rem; font-weight: 700; letter-spacing: .02em; text-overflow: ellipsis; white-space: nowrap; }
+    .js-nav .sidebar { position: fixed; top: 0; bottom: 0; left: 0; z-index: 50; width: min(340px, 86vw); height: auto; padding-top: 12px; border-bottom: 0; overscroll-behavior: contain; transform: translateX(-100%); visibility: hidden; transition: transform .25s ease, visibility 0s linear .25s; }
+    .js-nav .nav-list { grid-template-columns: 1fr; }
+    .js-nav .nav-link { display: flex; align-items: center; min-height: 52px; font-size: 1.05rem; }
+    .js-nav .nav-close { margin: 0 0 8px auto; }
+    .js-nav .nav-close::before { content: "\00d7"; font-size: 2rem; line-height: 1; }
+    .js-nav .nav-scrim { display: block; position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 40; background: rgba(46, 26, 20, .5); opacity: 0; visibility: hidden; transition: opacity .25s ease, visibility 0s linear .25s; }
+    .nav-open { overflow: hidden; }
+    .nav-open .sidebar { transform: none; visibility: visible; box-shadow: 8px 0 32px rgba(46, 26, 20, .35); transition-delay: 0s; }
+    .nav-open .nav-scrim { opacity: 1; visibility: visible; transition-delay: 0s; }
+}
+@media (max-width: 760px) {
+    .config-row { grid-template-columns: 1fr 1fr; }
+    .config-row > :first-child { grid-column: 1 / -1; }
+}
+@media (max-width: 640px) {
+    .content { padding: 20px 16px 32px; }
+    .charts { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .js-nav .sidebar, .js-nav .nav-scrim { transition: none; } }
+</style>
 </head>
+
 <body>
-    <div class="layout">
-        <aside class="sidebar">
-            <a class="brand" href="./">Scouting Sprocket<span>Admin View</span></a>
-            <nav aria-label="Main navigation">
-                <ul class="nav-list">
-                    <li><a class="nav-link" href="./">Dashboard</a></li>
-                    <li><a class="nav-link" href="./Forms.html">Forms</a></li>
-                    <li><a class="nav-link" href="./Builder.html">Builder</a></li>
-                    <li><a class="nav-link" href="./Export.html">Export</a></li>
-                    <li><a class="nav-link" href="./Import.html">Import</a></li>
-                    <li><a class="nav-link active" href="./Data_actions.html" aria-current="page">Data Actions</a></li>
-                    <li><a class="nav-link" href="./Settings.html">Settings</a></li>
-                </ul>
-            </nav>
-        </aside>
-        <main class="content">
-            <div class="workspace">
-                <header class="page-head">
-                    <div>
-                        <h1 id="title">Data Actions</h1>
-                        <p class="intro">Configure fields, inspect saved scouting records, and analyze team or match metrics.</p>
+<div class="layout">
+    <aside class="sidebar" id="site-nav">
+        <a class="brand" href="./">Scouting Sprocket</a>
+        <nav aria-label="Main navigation">
+            <ul class="nav-list">
+                <li><a class="nav-link" href="./">Dashboard</a></li>
+                <li><a class="nav-link" href="./Forms.html">Forms</a></li>
+                <li><a class="nav-link" href="./Builder.html">Builder</a></li>
+                <li><a class="nav-link" href="./Export.html">Export</a></li>
+                <li><a class="nav-link" href="./Import.html">Import</a></li>
+                <li><a class="nav-link active" href="./Data_actions.html" aria-current="page">Data Actions</a></li>
+                <li><a class="nav-link" href="./Settings.html">Settings</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="content">
+        <div class="workspace">
+            <header class="head">
+                <div>
+                    <h1>Data Actions</h1>
+                    <p class="intro">Filter saved responses and see how your metrics add up.</p>
+                </div>
+                <span id="meta" class="chip-count" hidden></span>
+            </header>
+            <p id="toast" class="toast" role="status" aria-live="polite"></p>
+
+            <section class="panel" id="filterPanel" aria-labelledby="filterHeading">
+                <div class="panel-head">
+                    <h2 id="filterHeading">Filters</h2>
+                    <button id="clearFilters" class="secondary small" type="button" hidden>Clear filters</button>
+                </div>
+                <div id="filters" class="fields"></div>
+            </section>
+
+            <section class="panel" id="summaryPanel" aria-labelledby="summaryHeading">
+                <div class="panel-head"><h2 id="summaryHeading">Summary</h2></div>
+                <div id="kpis" class="kpis"></div>
+                <div class="charts">
+                    <div class="chart-card">
+                        <div class="panel-head"><h3>Top 10 metrics by average</h3></div>
+                        <div id="metricChart" class="chart" role="img" aria-label="Bar chart of the top metrics by average"></div>
                     </div>
-                    <span id="formMeta" class="meta-chip" hidden></span>
-                </header>
-                <p id="status" class="status" role="status" aria-live="polite"></p>
-
-                <section class="panel" id="filterPanel">
-                    <div class="panel-head"><h2>Record filters</h2></div>
-                    <p class="help">Primary filters are populated from available saved values.</p>
-                    <div id="filters" class="field-grid"></div>
-                </section>
-
-                <section class="panel" id="summaryPanel">
-                    <div class="panel-head"><h2>Metric summary</h2></div>
-                    <div id="kpis" class="kpis"></div>
-                    <div class="chart-grid">
-                        <div class="chart-panel">
-                            <h3>Top 10 metrics by average</h3>
-                            <div id="metricChart" class="chart"></div>
+                    <div class="chart-card">
+                        <div class="panel-head">
+                            <h3>Most common values</h3>
+                            <select id="pick" aria-label="Metric to chart" hidden></select>
                         </div>
-                        <div class="chart-panel">
-                            <h3>Top 10 values for the first numeric metric</h3>
-                            <div id="valueChart" class="chart"></div>
-                        </div>
+                        <div id="valueChart" class="chart" role="img" aria-label="Bar chart of the most common values for the chosen metric"></div>
                     </div>
-                    <div class="panel-head" style="margin-top:18px"><h2>Metric statistics</h2></div>
-                    <div id="summary" class="table-wrap"></div>
-                </section>
+                </div>
+                <h3 class="sub">Metric statistics</h3>
+                <div id="summary" class="table-wrap"></div>
+            </section>
 
-                <section class="panel" id="recordsPanel">
-                    <div class="panel-head"><h2>Saved records</h2><span id="recordCount" class="help"></span></div>
-                    <div id="records" class="table-wrap"></div>
-                </section>
+            <section class="panel" id="recordsPanel" aria-labelledby="recordsHeading">
+                <div class="panel-head"><h2 id="recordsHeading">Saved records</h2><span id="recordCount"></span></div>
+                <div id="records" class="table-wrap"></div>
+            </section>
 
-                <details class="panel" id="configPanel" open>
-                    <summary><h2>Field visibility and lookup roles</h2></summary>
-                    <p class="help">Role controls lookup behavior. Visibility controls whether a field appears in records and charts.</p>
-                    <div class="config-row">
-                        <strong>Field</strong><strong>Role</strong><strong>Visibility</strong><strong>Type</strong>
-                    </div>
-                    <div id="configuration" class="configuration"></div>
-                    <div class="actions"><button id="saveConfig" type="button">Save data actions</button></div>
-                </details>
-            </div>
-        </main>
-    </div>
-    <script src="./app-storage.js"></script>
-    <script>
-        const status = document.getElementById("status");
-        const configuration = document.getElementById("configuration");
-        const filtersHost = document.getElementById("filters");
-        const recordsHost = document.getElementById("records");
-        const summaryHost = document.getElementById("summary");
-        const kpisHost = document.getElementById("kpis");
-        const metricChartHost = document.getElementById("metricChart");
-        const valueChartHost = document.getElementById("valueChart");
-        const recordCount = document.getElementById("recordCount");
-        let token;
-        let elements = [];
-        let records = [];
-        let modes = {};
-        let hidden = {};
+            <details class="panel" id="configPanel" open>
+                <summary><h2>Field setup</h2></summary>
+                <p class="hint">Role “Lookup filter” adds a filter above; “Exclude” drops the field from records and charts. Visibility hides a field without changing its role. Changes show right away; save to keep them.</p>
+                <div id="configuration"></div>
+                <div class="save-row">
+                    <button id="saveConfig" type="button">Save data actions</button>
+                    <span id="dirty" class="chip-count" hidden>Unsaved changes</span>
+                </div>
+            </details>
+        </div>
+    </main>
+</div>
 
-        const setStatus = (message, error = false) => {
-            status.textContent = message;
-            status.style.borderLeftColor = error ? "var(--danger)" : "";
-            status.style.color = error ? "var(--danger)" : "";
-        };
-        const keyFor = (sectionIndex, elementIndex) => `${sectionIndex}-${elementIndex}`;
-        const flattenElements = form => form.sections.flatMap((section, sectionIndex) =>
-            section.elements.map((element, elementIndex) => ({
-                ...element,
-                key: keyFor(sectionIndex, elementIndex),
-                section: section.title
-            })));
-        const valueFor = (record, key) => record?.values?.[key];
-        const textValue = value => Array.isArray(value)
-            ? value.join(", ")
-            : value && typeof value === "object"
-                ? Object.entries(value).map(([key, item]) => `${key}: ${Array.isArray(item) ? item.join(", ") : item}`).join("; ")
-                : value ?? "";
-        const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(2);
-        const addKpi = (value, label) => {
-            const kpi = document.createElement("div");
-            kpi.className = "kpi";
-            const strong = document.createElement("strong");
-            strong.textContent = value;
-            strong.title = String(value);
-            const span = document.createElement("span");
-            span.textContent = label;
-            kpi.append(strong, span);
-            kpisHost.append(kpi);
-        };
-        const addBar = (host, label, value, display, tip) => {
-            const bar = document.createElement("div");
-            bar.className = "bar";
-            const num = document.createElement("span");
-            num.className = "bar-value";
-            num.textContent = display;
-            const fill = document.createElement("div");
-            fill.className = "bar-fill";
-            fill.style.height = `${Math.max(2, value * 150)}px`;
-            fill.title = tip;
-            const text = document.createElement("span");
-            text.className = "bar-label";
-            text.textContent = label;
-            text.title = label;
-            bar.append(num, fill, text);
-            host.append(bar);
-        };
+<script>
+/* Hamburger drawer for the side nav on tablets and phones (<= 1100px). */
+(function () {
+    var side = document.getElementById("site-nav");
+    var content = document.querySelector(".content");
+    var query = window.matchMedia("(max-width: 1100px)");
+    var open = false;
+    document.documentElement.classList.add("js-nav");
 
-        function renderConfiguration() {
-            configuration.replaceChildren();
-            elements.forEach(element => {
-                const row = document.createElement("div");
-                row.className = "config-row";
-                const prompt = document.createElement("div");
-                prompt.className = "config-prompt";
-                prompt.textContent = `${element.section}: ${element.prompt}`;
-                const roleCell = document.createElement("div");
-                const select = document.createElement("select");
-                ["NULL", "None", "Primary"].forEach(mode => {
-                    const option = document.createElement("option");
-                    option.value = mode;
-                    option.textContent = mode;
-                    option.selected = (modes[element.key] || "NULL") === mode;
-                    select.append(option);
-                });
-                select.addEventListener("change", () => {
-                    modes[element.key] = select.value;
-                    renderFilters();
-                    renderRecords();
-                    renderSummary();
-                });
-                const roleLabel = document.createElement("span");
-                roleLabel.className = "config-label";
-                roleLabel.textContent = "Role";
-                roleCell.append(roleLabel, select);
+    var current = side.querySelector(".nav-link.active");
+    var bar = document.createElement("header");
+    bar.className = "app-bar";
+    var toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "nav-toggle";
+    toggle.setAttribute("aria-label", "Open menu");
+    toggle.setAttribute("aria-controls", side.id);
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.innerHTML = '<span class="nav-toggle-bars" aria-hidden="true"></span>';
+    var title = document.createElement("span");
+    title.className = "app-bar-title";
+    title.textContent = current ? current.textContent.trim() : document.title;
+    bar.appendChild(toggle);
+    bar.appendChild(title);
 
-                const visibilityCell = document.createElement("div");
-                const visibilityLabel = document.createElement("span");
-                visibilityLabel.className = "config-label";
-                visibilityLabel.textContent = "Visibility";
-                const visibility = document.createElement("select");
-                [["show", "Show"], ["hide", "Hide"]].forEach(([value, label]) => {
-                    const option = document.createElement("option");
-                    option.value = value;
-                    option.textContent = label;
-                    option.selected = hidden[element.key] ? value === "hide" : value === "show";
-                    visibility.append(option);
-                });
-                visibility.addEventListener("change", () => {
-                    hidden[element.key] = visibility.value === "hide";
-                    renderRecords();
-                    renderSummary();
-                });
-                visibilityCell.append(visibilityLabel, visibility);
-                const type = document.createElement("span");
-                type.className = "help";
-                type.textContent = `${element.type} · ${element.dataType}`;
-                row.append(prompt, roleCell, visibilityCell, type);
-                configuration.append(row);
-            });
-        }
+    var closeButton = document.createElement("button");
+    closeButton.type = "button";
+    closeButton.className = "nav-close";
+    closeButton.setAttribute("aria-label", "Close menu");
+    side.insertBefore(closeButton, side.firstChild);
 
-        function renderFilters() {
-            filtersHost.replaceChildren();
-            const primaryElements = elements.filter(element => modes[element.key] === "Primary");
-            if (!primaryElements.length) {
-                filtersHost.textContent = "Mark one or more fields as Primary to create lookup filters.";
-                return;
-            }
-            primaryElements.forEach(element => {
-                const wrapper = document.createElement("div");
-                const label = document.createElement("label");
-                const input = document.createElement("select");
-                input.id = `filter-${element.key}`;
-                label.htmlFor = input.id;
-                label.textContent = element.prompt;
-                const all = document.createElement("option");
-                all.value = "";
-                all.textContent = "All available values";
-                input.append(all);
-                const values = [...new Set(records
-                    .map(record => textValue(valueFor(record, element.key)))
-                    .filter(Boolean))]
-                    .sort((a, b) => a.localeCompare(b));
-                values.forEach(value => {
-                    const option = document.createElement("option");
-                    option.value = value;
-                    option.textContent = value;
-                    input.append(option);
-                });
-                input.addEventListener("input", () => {
-                    renderRecords();
-                    renderSummary();
-                });
-                wrapper.append(label, input);
-                filtersHost.append(wrapper);
-            });
-        }
+    var scrim = document.createElement("div");
+    scrim.className = "nav-scrim";
+    scrim.setAttribute("aria-hidden", "true");
+    document.body.insertBefore(bar, document.body.firstChild);
+    document.body.appendChild(scrim);
 
-        function filteredRecords() {
-            const primaryKeys = elements.filter(element => modes[element.key] === "Primary").map(element => element.key);
-            return records.filter(record => {
-                return primaryKeys.every(key => {
-                    const input = document.getElementById(`filter-${key}`);
-                    const filter = input?.value.trim().toLowerCase() || "";
-                    return !filter ||
-                        String(valueFor(record, key) ?? "").toLowerCase().includes(filter);
-                });
-            });
-        }
-
-        function renderRecords() {
-            const visible = elements.filter(element =>
-                modes[element.key] !== "None" && !hidden[element.key]);
-            const current = filteredRecords();
-            recordCount.textContent = `${current.length} of ${records.length} records`;
-            if (!current.length) {
-                const empty = document.createElement("div");
-                empty.className = "empty";
-                empty.textContent = "No saved records match the current filters.";
-                recordsHost.replaceChildren(empty);
-                return;
-            }
-            const table = document.createElement("table");
-            const head = document.createElement("tr");
-            ["Submitted", ...visible.map(element => element.prompt)].forEach(label => {
-                const cell = document.createElement("th");
-                cell.textContent = label;
-                head.append(cell);
-            });
-            table.append(head);
-            current.forEach(record => {
-                const row = document.createElement("tr");
-                const submitted = document.createElement("td");
-                submitted.textContent = record.submittedAt ? new Date(record.submittedAt).toLocaleString() : "";
-                row.append(submitted);
-                visible.forEach(element => {
-                    const cell = document.createElement("td");
-                    cell.textContent = textValue(valueFor(record, element.key));
-                    if (element.dataType === "number") cell.className = "num";
-                    row.append(cell);
-                });
-                table.append(row);
-            });
-            recordsHost.replaceChildren(table);
-        }
-
-        function renderSummary() {
-            const numeric = elements.filter(element => modes[element.key] !== "None" && !hidden[element.key] && element.dataType === "number");
-            const current = filteredRecords();
-            summaryHost.replaceChildren();
-            kpisHost.replaceChildren();
-            metricChartHost.replaceChildren();
-            valueChartHost.replaceChildren();
-            addKpi(current.length, `matching records (of ${records.length})`);
-            addKpi(numeric.length, "numeric metrics tracked");
-            if (!numeric.length || !current.length) {
-                const empty = document.createElement("div");
-                empty.className = "empty";
-                empty.textContent = "No numeric records are available for the current filters.";
-                summaryHost.replaceChildren(empty);
-                return;
-            }
-            const table = document.createElement("table");
-            const head = document.createElement("tr");
-            ["Metric", "Count", "Average", "Minimum", "Maximum"].forEach(label => {
-                const cell = document.createElement("th");
-                cell.textContent = label;
-                head.append(cell);
-            });
-            table.append(head);
-            numeric.forEach(element => {
-                const values = current.map(record => Number(valueFor(record, element.key))).filter(Number.isFinite);
-                if (!values.length) return;
-                const row = document.createElement("tr");
-                [element.prompt, values.length, (values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(2), Math.min(...values), Math.max(...values)].forEach((value, index) => {
-                    const cell = document.createElement("td");
-                    cell.textContent = String(value);
-                    if (index) cell.className = "num";
-                    row.append(cell);
-                });
-                table.append(row);
-            });
-            summaryHost.append(table);
-            const metricStats = numeric.map(element => {
-                const values = current.map(record => Number(valueFor(record, element.key))).filter(Number.isFinite);
-                return {
-                    element,
-                    average: values.length
-                        ? values.reduce((sum, value) => sum + value, 0) / values.length
-                        : 0,
-                    count: values.length
-                };
-            }).filter(stat => stat.count).sort((a, b) => b.average - a.average).slice(0, 10);
-            const metricMaximum = Math.max(...metricStats.map(stat => stat.average), 1);
-            if (metricStats.length) {
-                addKpi(metricStats[0].element.prompt, "highest-average metric");
-                addKpi(fmt(metricStats[0].average), "highest average value");
-            }
-            metricStats.forEach(stat => {
-                addBar(metricChartHost, stat.element.prompt, stat.average / metricMaximum,
-                    fmt(stat.average), `Average ${stat.average.toFixed(2)}`);
-            });
-
-            const chartElement = numeric[0];
-            const buckets = new Map();
-            current.forEach(record => {
-                const value = Number(valueFor(record, chartElement.key));
-                if (Number.isFinite(value)) buckets.set(String(value), (buckets.get(String(value)) || 0) + 1);
-            });
-            const topValues = [...buckets.entries()]
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 10);
-            const maximum = Math.max(...topValues.map(([, count]) => count), 1);
-            topValues.forEach(([label, count]) => {
-                addBar(valueChartHost, label, count / maximum, String(count), `${count} record(s)`);
-            });
-        }
-
-        document.getElementById("saveConfig").addEventListener("click", async () => {
-            try {
-                SprocketStorage.saveToken({
-                        ...token,
-                        dataActions: { fields: modes, hidden }
-                    }, true);
-                token.dataActions = { fields: modes, hidden };
-                setStatus("Data action configuration saved to data.token.");
-                renderRecords();
-                renderSummary();
-            } catch (error) {
-                setStatus(error instanceof Error ? error.message : "Could not save configuration.", true);
-            }
+    function setOpen(next, restoreFocus) {
+        if (next === open) return;
+        open = next;
+        document.body.classList.toggle("nav-open", open);
+        toggle.setAttribute("aria-expanded", String(open));
+        [content, bar].forEach(function (el) {
+            if (open) el.setAttribute("inert", "");
+            else el.removeAttribute("inert");
         });
+        if (open) closeButton.focus();
+        else if (restoreFocus !== false) toggle.focus();
+    }
+    toggle.addEventListener("click", function () { setOpen(true); });
+    closeButton.addEventListener("click", function () { setOpen(false); });
+    scrim.addEventListener("click", function () { setOpen(false); });
+    side.addEventListener("click", function (e) { if (e.target.closest("a")) setOpen(false, false); });
+    document.addEventListener("keydown", function (e) { if (open && e.key === "Escape") setOpen(false); });
 
-        async function load() {
-            try {
-                token = SprocketStorage.readToken();
-                elements = flattenElements(token);
-                modes = { ...(token.dataActions?.fields || {}) };
-                hidden = { ...(token.dataActions?.hidden || {}) };
-                records = Array.isArray(token.responses) ? token.responses : [];
-                document.getElementById("title").textContent = `Data Actions — ${token.name || "Saved form"}`;
-                const meta = document.getElementById("formMeta");
-                meta.textContent = `${records.length} responses · ${elements.length} fields`;
-                meta.hidden = false;
-                renderConfiguration();
+    var startX = null;
+    side.addEventListener("touchstart", function (e) { startX = e.touches[0].clientX; }, { passive: true });
+    side.addEventListener("touchend", function (e) {
+        if (startX !== null && e.changedTouches[0].clientX - startX < -60) setOpen(false);
+        startX = null;
+    }, { passive: true });
+
+    function onBreakpoint(e) { if (!e.matches) setOpen(false, false); }
+    if (query.addEventListener) query.addEventListener("change", onBreakpoint);
+    else if (query.addListener) query.addListener(onBreakpoint);
+    window.addEventListener("pageshow", function () { setOpen(false, false); });
+})();
+</script>
+
+<script src="./app-storage.js"></script>
+<script>
+"use strict";
+
+/* Reads the saved form and its responses; stores field roles and visibility in token.dataActions
+   as { fields: { "<section>-<question>": "NULL" | "None" | "Primary" }, hidden: { key: true } }. */
+
+const $ = id => document.getElementById(id);
+const el = (tag, className, text) => {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+};
+
+const ROLES = [["NULL", "Standard"], ["None", "Exclude"], ["Primary", "Lookup filter"]];
+const VISIBILITY = [["show", "Show"], ["hide", "Hide"]];
+
+let token = {};
+let elements = [];
+let records = [];
+let modes = {};
+let hidden = {};
+let filters = {};
+let picked = 0;
+let toastTimer;
+
+const keyFor = (s, q) => `${s}-${q}`;
+const valueFor = (record, key) => record?.values?.[key];
+const textValue = value => Array.isArray(value)
+    ? value.join(", ")
+    : value && typeof value === "object"
+        ? Object.entries(value).map(([key, item]) => `${key}: ${Array.isArray(item) ? item.join(", ") : item}`).join("; ")
+        : value ?? "";
+const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(2);
+const shown = () => elements.filter(e => modes[e.key] !== "None" && !hidden[e.key]);
+const numbers = (list, key) => list.map(r => Number(valueFor(r, key))).filter(Number.isFinite);
+
+function say(message, error = false) {
+    const node = $("toast");
+    clearTimeout(toastTimer);
+    node.textContent = message;
+    node.className = `toast${error ? " error" : ""}`;
+    if (!error) toastTimer = setTimeout(() => { node.textContent = ""; }, 4000);
+}
+
+function table(headings, rows, numericFrom = Infinity) {
+    const t = el("table");
+    const head = el("tr");
+    headings.forEach(h => head.append(el("th", "", h)));
+    t.append(el("thead")).append(head);
+    const body = el("tbody");
+    rows.forEach(row => {
+        const tr = el("tr");
+        row.forEach((cell, i) => tr.append(el("td", i >= numericFrom ? "num" : "", String(cell))));
+        body.append(tr);
+    });
+    t.append(body);
+    return t;
+}
+
+function selectField(label, id, options, value, onChange) {
+    const wrap = el("div");
+    const lab = el("label", "", label);
+    lab.htmlFor = id;
+    const select = el("select");
+    select.id = id;
+    options.forEach(([v, l]) => select.append(new Option(l, v)));
+    select.value = value;
+    select.addEventListener("change", () => onChange(select.value));
+    wrap.append(lab, select);
+    return wrap;
+}
+
+/* ---------- Filters ---------- */
+function filteredRecords() {
+    const active = elements.filter(e => modes[e.key] === "Primary" && filters[e.key]);
+    return records.filter(r => active.every(e => textValue(valueFor(r, e.key)) === filters[e.key]));
+}
+
+function renderFilters() {
+    const host = $("filters");
+    host.replaceChildren();
+    const primary = elements.filter(e => modes[e.key] === "Primary");
+    $("clearFilters").hidden = !primary.some(e => filters[e.key]);
+    if (!primary.length) {
+        host.append(el("p", "hint", "Set a field’s role to “Lookup filter” in Field setup below to filter by it here."));
+        return;
+    }
+    primary.forEach(e => {
+        const values = [...new Set(records.map(r => textValue(valueFor(r, e.key))).filter(Boolean))]
+            .sort((a, b) => String(a).localeCompare(String(b), undefined, { numeric: true }));
+        if (!values.includes(filters[e.key])) delete filters[e.key];
+        host.append(selectField(e.prompt, `filter-${e.key}`, [["", "All values"], ...values.map(v => [v, v])],
+            filters[e.key] || "", value => {
+                if (value) filters[e.key] = value; else delete filters[e.key];
+                $("clearFilters").hidden = !primary.some(p => filters[p.key]);
+                renderViews();
+            }));
+    });
+}
+
+$("clearFilters").addEventListener("click", () => { filters = {}; renderFilters(); renderViews(); });
+
+/* ---------- Records ---------- */
+function renderRecords() {
+    const columns = shown();
+    const current = filteredRecords();
+    $("recordCount").textContent = `${current.length} of ${records.length} records`;
+    const host = $("records");
+    if (!current.length) {
+        host.replaceChildren(el("div", "empty", records.length ? "No saved records match the current filters." : "No responses saved yet. Fill in the form on the Forms page."));
+        return;
+    }
+    const rows = current.map(r => [
+        r.submittedAt ? new Date(r.submittedAt).toLocaleString() : "",
+        ...columns.map(e => textValue(valueFor(r, e.key)))
+    ]);
+    host.replaceChildren(table(["Submitted", ...columns.map(e => e.prompt)], rows));
+    columns.forEach((e, i) => {
+        if (e.dataType === "number") host.querySelectorAll(`tbody tr td:nth-child(${i + 2})`).forEach(td => td.classList.add("num"));
+    });
+}
+
+/* ---------- Summary ---------- */
+function kpi(value, label) {
+    const box = el("div", "kpi");
+    const strong = el("strong", "", String(value));
+    strong.title = String(value);
+    box.append(strong, el("span", "", label));
+    $("kpis").append(box);
+}
+
+function bar(host, label, ratio, display, tip) {
+    const item = el("div", "bar");
+    const fill = el("div", "bar-fill");
+    fill.style.height = `${Math.max(2, ratio * 150)}px`;
+    fill.title = tip;
+    const text = el("span", "bar-label", label);
+    text.title = label;
+    item.append(el("span", "bar-value", display), fill, text);
+    host.append(item);
+}
+
+function renderSummary() {
+    const numeric = shown().filter(e => e.dataType === "number");
+    const current = filteredRecords();
+    ["kpis", "metricChart", "valueChart", "summary"].forEach(id => $(id).replaceChildren());
+    kpi(current.length, `matching responses (of ${records.length})`);
+    kpi(numeric.length, "numeric metrics");
+
+    const pick = $("pick");
+    pick.hidden = numeric.length < 2;
+    pick.value = picked;
+    if (!numeric.length || !current.length) {
+        $("summary").append(el("div", "empty", numeric.length ? "No responses match the current filters." : "No numeric metrics yet. Add Number, Rating or Linear Scale questions in the Builder."));
+        return;
+    }
+
+    const stats = numeric.map(e => {
+        const list = numbers(current, e.key);
+        return { e, count: list.length, avg: list.length ? list.reduce((a, b) => a + b, 0) / list.length : 0,
+                 min: Math.min(...list), max: Math.max(...list) };
+    }).filter(s => s.count);
+    $("summary").append(table(["Metric", "Count", "Average", "Minimum", "Maximum"],
+        stats.map(s => [s.e.prompt, s.count, s.avg.toFixed(2), s.min, s.max]), 1));
+
+    const top = [...stats].sort((a, b) => b.avg - a.avg).slice(0, 10);
+    if (top.length) {
+        kpi(top[0].e.prompt, "highest-average metric");
+        kpi(fmt(top[0].avg), "highest average value");
+    }
+    const ceiling = Math.max(...top.map(s => s.avg), 1);
+    top.forEach(s => bar($("metricChart"), s.e.prompt, s.avg / ceiling, fmt(s.avg), `Average ${s.avg.toFixed(2)}`));
+
+    // Which metric the second chart uses
+    picked = Math.min(picked, numeric.length - 1);
+    pick.replaceChildren(...numeric.map((e, i) => new Option(e.prompt, i)));
+    pick.value = picked;
+    const counts = new Map();
+    numbers(current, numeric[picked].key).forEach(v => counts.set(String(v), (counts.get(String(v)) || 0) + 1));
+    const common = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 10);
+    const most = Math.max(...common.map(([, n]) => n), 1);
+    common.forEach(([value, n]) => bar($("valueChart"), value, n / most, String(n), `${n} response${n === 1 ? "" : "s"}`));
+}
+
+$("pick").addEventListener("change", event => { picked = Number(event.target.value); renderSummary(); });
+
+function renderViews() {
+    renderRecords();
+    renderSummary();
+}
+
+/* ---------- Field setup ---------- */
+function changed() { $("dirty").hidden = false; }
+
+function renderConfig() {
+    const host = $("configuration");
+    host.replaceChildren();
+    if (!elements.length) host.append(el("div", "empty", "This form has no questions yet."));
+    elements.forEach(e => {
+        const row = el("div", "config-row");
+        const name = el("div");
+        name.append(el("strong", "", e.prompt), el("small", "", `${e.section} — ${e.type}`));
+        row.append(name,
+            selectField("Role", `role-${e.key}`, ROLES, modes[e.key] || "NULL", value => {
+                modes[e.key] = value;
+                changed();
                 renderFilters();
-                renderRecords();
-                renderSummary();
-            } catch (error) {
-                setStatus(error instanceof Error ? error.message : "Could not load the built form.", true);
-            }
-        }
-        load();
-    </script>
+                renderViews();
+            }),
+            selectField("Visibility", `vis-${e.key}`, VISIBILITY, hidden[e.key] ? "hide" : "show", value => {
+                hidden[e.key] = value === "hide";
+                changed();
+                renderViews();
+            }));
+        host.append(row);
+    });
+}
+
+$("saveConfig").addEventListener("click", () => {
+    try {
+        SprocketStorage.saveToken({ ...token, dataActions: { fields: modes, hidden } }, true);
+        token.dataActions = { fields: modes, hidden };
+        $("dirty").hidden = true;
+        say("Data actions saved.");
+    } catch (error) {
+        say(error instanceof Error ? error.message : "Could not save data actions.", true);
+    }
+});
+
+/* ---------- Load ---------- */
+function load() {
+    try {
+        token = SprocketStorage.readToken();
+        elements = token.sections.flatMap((section, s) =>
+            section.elements.map((element, q) => ({ ...element, key: keyFor(s, q), section: section.title })));
+    } catch (error) {
+        say(error instanceof Error ? error.message : "Could not load the saved form. Build one in the Builder first.", true);
+        return;
+    }
+    modes = { ...(token.dataActions?.fields || {}) };
+    hidden = { ...(token.dataActions?.hidden || {}) };
+    records = Array.isArray(token.responses) ? token.responses : [];
+    $("meta").textContent = `${token.name || "Saved form"}: ${records.length} response${records.length === 1 ? "" : "s"}, ${elements.length} fields`;
+    $("meta").hidden = false;
+    renderConfig();
+    renderFilters();
+    renderViews();
+}
+load();
+</script>
 </body>
 </html>

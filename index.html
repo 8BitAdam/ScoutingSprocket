@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scouting Sprocket</title>
 
+    <!-- Fonts from the Style slide. For offline-first use, self-host these two families; the fallbacks keep the layout intact without them. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anta&family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./nav.css">
+    <script src="./nav.js" defer></script>
+
     <style>
         :root {
             color-scheme: light;
@@ -15,7 +22,10 @@
             --outline: #fdf6e3;
             --text: #ba8a43;
             --muted: #3f4534;
+            --header: #61382d;
             --accent: #380372;
+            --font-display: "Anta", "Segoe UI", system-ui, sans-serif;
+            --font-body: "M PLUS Rounded 1c", "Segoe UI", system-ui, sans-serif;
         }
 
         * {
@@ -26,8 +36,9 @@
             margin: 0;
             min-height: 100vh;
             background: var(--background);
-            color: var(--text);
-            font-family: Arial, sans-serif;
+            color: var(--muted);
+            font-family: var(--font-body);
+            line-height: 1.55;
         }
 
         .layout {
@@ -35,79 +46,9 @@
             min-height: 100vh;
         }
 
-        .sidebar {
-            width: var(--sidebar-width);
-            flex-shrink: 0;
-            padding: 28px 16px;
-            background: var(--sidebar);
-            border-right: 1px solid var(--outline);
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin: 0 12px 32px;
-            color: var(--surface);
-            font-size: 1.25rem;
-            font-weight: 700;
-            letter-spacing: 0.04em;
-            text-decoration: none;
-        }
-
-        .brand-mark {
-            display: block;
-            width: 42px;
-            height: 42px;
-            flex-shrink: 0;
-            object-fit: contain;
-        }
-
-        .brand-copy {
-            display: block;
-        }
-
-        .brand-copy > span {
-            display: block;
-            margin-top: 5px;
-            color: var(--muted);
-            font-size: 0.72rem;
-            font-weight: 400;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-        }
-
-        .nav-list {
-            display: grid;
-            gap: 6px;
-            margin: 0;
-            padding: 0;
-            list-style: none;
-        }
-
-        .nav-link {
-            display: block;
-            padding: 12px 14px;
-            border-radius: 8px;
-            color: var(--muted);
-            text-decoration: none;
-            transition: background 0.2s ease, color 0.2s ease;
-        }
-
-        .nav-link:hover,
-        .nav-link:focus-visible,
-        .nav-link.active {
-            background: var(--surface);
-            color: var(--text);
-            outline: none;
-        }
-
-        .nav-link.active {
-            box-shadow: inset 3px 0 var(--accent);
-        }
-
         .content {
             flex: 1;
+            min-width: 0;
             padding: 48px;
         }
 
@@ -121,104 +62,112 @@
             align-items: flex-end;
             justify-content: space-between;
             gap: 24px;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
         }
 
         .dashboard-header h1 {
-            margin: 0 0 8px;
+            display: inline-block;
+            margin: 0 0 12px;
+            color: var(--header);
+            font-family: var(--font-display);
+            font-size: clamp(2.2rem, 5vw, 3rem);
+            font-weight: 400;
+            line-height: 1.1;
+        }
+
+        /* Purple underline that matches the title width, as on the slides */
+        .dashboard-header h1::after {
+            content: "";
+            display: block;
+            height: 10px;
+            margin-top: 8px;
+            border-radius: 3px;
+            background: var(--accent);
         }
 
         .dashboard-header p {
             margin: 0;
+            font-size: 1.05rem;
         }
 
         .dashboard-date {
             color: var(--muted);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             white-space: nowrap;
         }
 
         .welcome-panel {
             display: flex;
             align-items: center;
-            gap: 20px;
-            padding: 28px;
+            gap: 28px;
+            padding: 28px 32px;
             border: 1px solid var(--outline);
-            border-radius: 12px;
+            border-radius: 16px;
             background: var(--surface);
         }
 
         .welcome-mark {
             display: block;
-            width: 72px;
-            height: 72px;
+            width: 96px;
+            height: 96px;
             flex-shrink: 0;
             object-fit: contain;
         }
 
         .welcome-panel h2 {
-            margin: 0 0 6px;
+            margin: 0 0 8px;
+            color: var(--header);
+            font-family: var(--font-display);
+            font-size: clamp(1.5rem, 3vw, 2.1rem);
+            font-weight: 400;
+            line-height: 1.15;
         }
 
         .welcome-panel p {
             margin: 0;
+            max-width: 46ch;
         }
 
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 14px;
-            margin-top: 18px;
+            gap: 16px;
+            margin-top: 20px;
         }
 
         .summary-item {
-            padding: 20px;
+            padding: 22px 22px 20px;
             border: 1px solid var(--outline);
-            border-radius: 10px;
+            border-radius: 12px;
             background: var(--surface);
         }
 
         .summary-item strong {
             display: block;
-            margin-bottom: 6px;
-            font-size: 1.6rem;
+            margin-bottom: 4px;
+            color: var(--header);
+            font-family: var(--font-display);
+            font-size: 2.4rem;
+            font-weight: 400;
+            line-height: 1.1;
         }
 
         .summary-item span {
             color: var(--muted);
-            font-size: 0.85rem;
+            font-size: 0.95rem;
+            font-weight: 700;
         }
 
-        .content h1 {
-            margin-top: 0;
-        }
-
-        .content p {
-            color: var(--muted);
+        /* Vertical tablets and phones: the nav becomes a hamburger drawer (nav.css) */
+        @media (max-width: 1100px) {
+            .content {
+                padding: 28px 24px 40px;
+            }
         }
 
         @media (max-width: 640px) {
-            .layout {
-                display: block;
-            }
-
-            .sidebar {
-                width: 100%;
-                padding: 20px 16px;
-                border-right: 0;
-                border-bottom: 1px solid var(--outline);
-            }
-
-            .brand {
-                margin-bottom: 18px;
-            }
-
-            .nav-list {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-
             .content {
-                padding: 28px 24px;
+                padding: 20px 16px 32px;
             }
 
             .dashboard-header {
@@ -228,6 +177,16 @@
             .dashboard-date {
                 display: block;
                 margin-top: 12px;
+            }
+
+            .welcome-panel {
+                gap: 18px;
+                padding: 22px 20px;
+            }
+
+            .welcome-mark {
+                width: 72px;
+                height: 72px;
             }
 
             .summary-grid {
@@ -241,7 +200,7 @@
     <div class="layout">
         <aside class="sidebar">
             <a class="brand" href="./">
-                <img class="brand-mark" src="./assets/img/Michael.png" alt="Michel mascot">
+                <img class="brand-mark" src="./assets/img/bw.png" alt="Michel mascot">
                 <span class="brand-copy">
                     Michel
                     <span>Scouting Sprocket</span>
