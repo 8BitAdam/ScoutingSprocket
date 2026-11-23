@@ -1,332 +1,346 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scouting Sprocket</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Scouting Sprocket</title>
+	<link rel="stylesheet" href="https://8bitadam.github.io/SnorpCSS/css.min/flexi.css">
 
-    <!-- Fonts from the Style slide. For offline-first use, self-host these two families; the fallbacks keep the layout intact without them. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anta&family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./nav.css">
-    <script src="./nav.js" defer></script>
+	<style>
+	
+	* {
+    box-sizing: border-box;
+    background-color: #B98942;
+	}
+	.hamburger {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 56px;
+    padding: 0 20px 0 16px;
+    border: 5px solid #B98942;
+    border-radius: 16px;
+    background-color: #D4CEB1;
+    color: #61382D;
+    font-family: 'Nunito', 'Comic Sans MS', Arial, Helvetica, sans-serif;
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.1s ease, background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+	}
+	.hamburger .bars {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 26px;
+    background-color: transparent;
+	}
+	.hamburger .bars span {
+    display: block;
+    height: 4px;
+    border-radius: 2px;
+    background-color: #61382D;
+    transition: background-color 0.15s ease;
+	}
+	.hamburger .label { background-color: transparent; }
+	.hamburger:active {
+    background-color: #380372;
+    border-color: #380372;
+    color: #FEFEFE;
+    transform: scale(0.96);
+	}
+	.hamburger:active .bars span { background-color: #FEFEFE; }
+	.hamburger:focus-visible,
+	.menu a:focus-visible,
+	.menu-close:focus-visible {
+    outline: 3px solid #380372;
+    outline-offset: 3px;
+	}
+	.backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 9;
+    background-color: rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+	}
+	.backdrop.open {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease, visibility 0s;
+	}
+	html.menu-open { overflow: hidden; }
+	@media (prefers-reduced-motion: reduce) {
+    .hamburger, .hamburger .bars span, .menu, .backdrop { transition: none; }
+	}
+	.menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 33.333vw;
+    min-width: 220px;
+    height: 100vh;
+    padding: 20px;
+    border-right: 5px solid #B98942;
+    background-color: #D4CEB1;
+    overflow-y: auto;
+    z-index: 10;
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform 0.3s ease, visibility 0s linear 0.3s;
+	}
+	.menu.open {
+    transform: translateX(0);
+    visibility: visible;
+    transition: transform 0.3s ease, visibility 0s;
+	}
+	.menu a {
+    display: block;
+    padding: 14px 20px;
+    margin-bottom: 12px;
+    border: 5px solid #B98942;
+    border-radius: 16px;
+    background-color: #D4CEB1;
+    color: #3F4534;
+    font-family: 'Nunito', 'Comic Sans MS', Arial, Helvetica, sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+    text-decoration: none;
+	}
+	.menu a:hover { background-color: #B98942; }
+	.menu a.active {
+    background-color: #380372;
+    border-color: #380372;
+    color: #FEFEFE;
+	}
+	.menu-close {
+    display: block;
+    min-width: 48px;
+    min-height: 48px;
+    margin: 0 0 16px auto;
+    border: none;
+    background-color: transparent;
+    color: #61382D;
+    font-size: 28px;
+    cursor: pointer;
+	}
+	.frame {
+    position: relative;
+    isolation: isolate;          /* keeps the ::before behind content but above the background */
+    border-radius: 16px;
+    background-color: #D4CEB1;
+    border: 5px solid #FEFEFE;
+    padding: 20px;
+    width: calc(100% - 192px);
+    margin: 96px;
+	}
+	
+	.frame::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background-image: url("concrete-texture-cleaned.jpg");
+    background-size: cover;
+    opacity: .1;
+	}
+	.element{
+    border-radius: 16px;
+    background-color: #D4CEB1;
+    opacity: 75%;
+    border: 5px solid #B98942;
+    padding: 20px;
+    width: fit-content;
+    margin: 96px;
+    display: block; 
+	margin: auto; 
+	margin-bottom: 3em;
+	}
+	@font-face {
+    font-family: 'Nunito';
+    src: url('Fonts/Nunito.ttf') format('truetype');
+    font-weight: 200 1000;
+    font-style: normal;
+    font-display: swap;
+	}
+	@font-face {
+    font-family: 'Anta';
+    src: url('Fonts/Anta.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+	}
+	@font-face {
+    font-family: 'OpenDyslexic';
+    src: url('Fonts/OpenDyslexic.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+	}
+	
+	p {
+  font-size: 24px;
+  font-family: 'Nunito', 'Comic Sans MS', Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  color: #3F4534;
+  background-color: transparent;
+	}
+	
+	h1 {
+    font-size: 36px;
+    font-family: 'Nunito', 'Comic Sans MS', Arial, Helvetica, sans-serif;
+    color: #61382D;
+    background-color: transparent;
+    margin-bottom: 5px;
+	}
+	
+	h2 {
+  font-size: 36px;
+  font-family: 'Nunito', 'Comic Sans MS', Arial, Helvetica, sans-serif;
+  color: #7A4B3A;
+  background-color: transparent;
+	}
+	
+	h3 {
+  font-size: 28px;
+  font-family: 'Nunito', 'Comic Sans MS', Arial, Helvetica, sans-serif;
+  color: #5A6446;
+  background-color: transparent;
+	}
+	h4{
+	font-size: 12px;
+  font-family: 'Nunito', 'Comic Sans MS', Arial, Helvetica, sans-serif;
+  color: #5A6446;
+  background-color: transparent;
+	}
+	.center {
+	text-align: center;
+	}
+	
+	img {
+	display: block; 
+	margin: auto; 
+	background-color: transparent;
+	}
+	.head {
+    display: block;
+    background-color: transparent;
+	}
+	
+	.underline {
+    width: 100%;
+    height: 10px;
+    background-color: #380372;
+    margin-bottom: 20px;
+	}
+	.button 
+	{
+	border-radius: 16px;
+    background-color: rgba(56, 3, 114, .5);
+    opacity: 75%;
+    border: 5px solid rgba(56, 3, 114, 1);
+    padding: 20px;
+    width: fit-content;
+    margin: 96px;
+    display: block; 
+margin: auto; 
+margin-bottom: 3em;
 
-    <style>
-        :root {
-            color-scheme: light;
-            --sidebar-width: 250px;
-            --background: #d4ceb1;
-            --sidebar: #ba8a43;
-            --surface: #f1e4c4;
-            --outline: #fdf6e3;
-            --text: #ba8a43;
-            --muted: #3f4534;
-            --header: #61382d;
-            --accent: #380372;
-            --font-display: "Anta", "Segoe UI", system-ui, sans-serif;
-            --font-body: "M PLUS Rounded 1c", "Segoe UI", system-ui, sans-serif;
-        }
+	}
+	.button-alert 
+	{
+	border-radius: 16px;
+    background-color: rgba(166, 75, 50, .5);
+    opacity: 75%;
+    border: 5px solid rgba(166, 75, 50, 1);
+    padding: 20px;
+    width: fit-content;
+    margin: 96px;
+    display: block; 
+margin: auto; 
+margin-bottom: 3em;
 
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            min-height: 100vh;
-            background: var(--background);
-            color: var(--muted);
-            font-family: var(--font-body);
-            line-height: 1.55;
-        }
-
-        .layout {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .content {
-            flex: 1;
-            min-width: 0;
-            padding: 48px;
-        }
-
-        .dashboard {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .dashboard-header {
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            gap: 24px;
-            margin-bottom: 28px;
-        }
-
-        .dashboard-header h1 {
-            display: inline-block;
-            margin: 0 0 12px;
-            color: var(--header);
-            font-family: var(--font-display);
-            font-size: clamp(2.2rem, 5vw, 3rem);
-            font-weight: 400;
-            line-height: 1.1;
-        }
-
-        /* Purple underline that matches the title width, as on the slides */
-        .dashboard-header h1::after {
-            content: "";
-            display: block;
-            height: 10px;
-            margin-top: 8px;
-            border-radius: 3px;
-            background: var(--accent);
-        }
-
-        .dashboard-header p {
-            margin: 0;
-            font-size: 1.05rem;
-        }
-
-        .dashboard-date {
-            color: var(--muted);
-            font-size: 0.95rem;
-            white-space: nowrap;
-        }
-
-        .welcome-panel {
-            display: flex;
-            align-items: center;
-            gap: 28px;
-            padding: 28px 32px;
-            border: 1px solid var(--outline);
-            border-radius: 16px;
-            background: var(--surface);
-        }
-
-        .welcome-mark {
-            display: block;
-            width: 96px;
-            height: 96px;
-            flex-shrink: 0;
-            object-fit: contain;
-        }
-
-        .welcome-panel h2 {
-            margin: 0 0 8px;
-            color: var(--header);
-            font-family: var(--font-display);
-            font-size: clamp(1.5rem, 3vw, 2.1rem);
-            font-weight: 400;
-            line-height: 1.15;
-        }
-
-        .welcome-panel p {
-            margin: 0;
-            max-width: 46ch;
-        }
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-top: 20px;
-        }
-
-        .summary-item {
-            padding: 22px 22px 20px;
-            border: 1px solid var(--outline);
-            border-radius: 12px;
-            background: var(--surface);
-        }
-
-        .summary-item strong {
-            display: block;
-            margin-bottom: 4px;
-            color: var(--header);
-            font-family: var(--font-display);
-            font-size: 2.4rem;
-            font-weight: 400;
-            line-height: 1.1;
-        }
-
-        .summary-item span {
-            color: var(--muted);
-            font-size: 0.95rem;
-            font-weight: 700;
-        }
-
-        /* Vertical tablets and phones: the nav becomes a hamburger drawer (nav.css) */
-        @media (max-width: 1100px) {
-            .content {
-                padding: 28px 24px 40px;
-            }
-        }
-
-        @media (max-width: 640px) {
-            .content {
-                padding: 20px 16px 32px;
-            }
-
-            .dashboard-header {
-                display: block;
-            }
-
-            .dashboard-date {
-                display: block;
-                margin-top: 12px;
-            }
-
-            .welcome-panel {
-                gap: 18px;
-                padding: 22px 20px;
-            }
-
-            .welcome-mark {
-                width: 72px;
-                height: 72px;
-            }
-
-            .summary-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+	}
+	.row {
+	background-color: transparent;
+	}
+	</style>
 </head>
-
 <body>
-    <div class="layout">
-        <aside class="sidebar">
-            <a class="brand" href="./">
-                <img class="brand-mark" src="./assets/img/bw.png" alt="Michel mascot">
-                <span class="brand-copy">
-                    Michel
-                    <span>Scouting Sprocket</span>
-                </span>
-            </a>
-
-            <nav aria-label="Main navigation">
-                <ul class="nav-list">
-                    <li>
-                        <a class="nav-link active" href="./" aria-current="page">
-                            Dashboard
-                        </a>
-                    </li>
-                    <li>
-                        <a class="nav-link" href="./Forms.html">
-                            Forms
-                        </a>
-                    </li>
-                    <li>
-                        <a class="nav-link" href="./Builder.html">
-                            Builder
-                        </a>
-                    </li>
-                    <li>
-                        <a class="nav-link" href="./Export.html">
-                            Export
-                        </a>
-                    </li>
-                    <li>
-                        <a class="nav-link" href="./Import.html">
-                            Import
-                        </a>
-                    </li>
-                    <li>
-                        <a class="nav-link" href="./Data_actions.html">
-                            Data Actions
-                        </a>
-                    </li>
-                    <li>
-                        <a class="nav-link" href="./Settings.html">
-                            Settings
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </aside>
-
-        <main class="content">
-            <div class="dashboard">
-                <header class="dashboard-header">
-                    <div>
-                        <h1>Scouting Dashboard</h1>
-                        <p>Welcome back to your scouting workspace.</p>
-                    </div>
-                    <span id="dashboard-date" class="dashboard-date"></span>
-                </header>
-
-                <section class="welcome-panel" aria-labelledby="welcome-title">
-                    <img class="welcome-mark" src="./assets/img/Michael.png" alt="Michel mascot">
-                    <div>
-                        <h2 id="welcome-title">Ready when you are.</h2>
-                        <p>Review your scouting activity, manage forms, and keep your data ready for the next match.</p>
-                    </div>
-                </section>
-
-                <section class="summary-grid" aria-label="Dashboard summary">
-                    <div class="summary-item"><strong id="response-count">0</strong><span>Responses recorded</span></div>
-                    <div class="summary-item"><strong id="team-count">0</strong><span>Teams tracked</span></div>
-                    <div class="summary-item"><strong id="completion-rate">0%</strong><span>Data complete</span></div>
-                </section>
+    <div class="frame">
+        <button class="hamburger" id="menu-toggle" aria-expanded="false" aria-controls="menu">
+            <span class="bars" aria-hidden="true"><span></span><span></span><span></span></span>
+            <span class="label">Menu</span>
+        </button>
+        <div class="backdrop" id="backdrop"></div>
+        <nav class="menu" id="menu" aria-label="Main">
+            <button class="menu-close" aria-label="Close menu">✕</button>
+            <a href="#" class="active" aria-current="page">Home</a>
+            <a href="#">About</a>
+            <a href="#">Demo Data</a>
+        </nav>
+        <img src="./sprocket-eye-pie-math.png" alt="Scouting Sprocket logo" width="300">
+        <div class="element">
+            <div class="head">
+                <h1>Scouting Sprocket</h1>
+                <div class="underline"></div>
+                <p class="center">Open Core - Visual Demo</p>
+                <h4 class="center">Version 1.17 Visual Demo</h4>
             </div>
-        </main>
+        </div>
+        <div class="element">
+            <div class="head">
+                <h1>Load Demo Data</h1>
+                <div class="underline"></div>
+                <div class="row">
+                    <div class="col-1 button" style="margin-right: 1em;">One part</div>
+                   <div class="col-1 button-alert">One part</div>
+                </div>
+            </div>
+        </div>
     </div>
-    <script src="./app-storage.js"></script>
+    
+	
     <script>
-        const dashboardDate = document.getElementById("dashboard-date");
-        const responseCount = document.getElementById("response-count");
-        const teamCount = document.getElementById("team-count");
-        const completionRate = document.getElementById("completion-rate");
+    (function () {
+        var toggle = document.getElementById('menu-toggle');
+        var menu = document.getElementById('menu');
+        var backdrop = document.getElementById('backdrop');
+        var closeBtn = menu.querySelector('.menu-close');
 
-        dashboardDate.textContent = new Intl.DateTimeFormat(undefined, {
-            year: "numeric",
-            month: "long",
-            day: "numeric"
-        }).format(new Date());
-
-        const hasAnswer = value => {
-            if (Array.isArray(value)) return value.some(hasAnswer);
-            if (value && typeof value === "object") return Object.values(value).some(hasAnswer);
-            return value !== undefined && value !== null && String(value).trim() !== "";
-        };
-
-        try {
-            const token = SprocketStorage.readToken();
-            const responses = Array.isArray(token.responses) ? token.responses : [];
-            const elements = Array.isArray(token.sections)
-                ? token.sections.flatMap(section => Array.isArray(section.elements) ? section.elements : [])
-                : [];
-            const teamIndexes = elements
-                .map((element, index) => /team/i.test(element.prompt || "") ? index : -1)
-                .filter(index => index >= 0);
-            const teams = new Set();
-
-            responses.forEach(record => {
-                const values = record && record.values && typeof record.values === "object" ? record.values : {};
-                teamIndexes.forEach(index => {
-                    const value = values[index];
-                    if (Array.isArray(value)) value.filter(hasAnswer).forEach(item => teams.add(String(item).trim()));
-                    else if (hasAnswer(value)) teams.add(String(value).trim());
-                });
-            });
-
-            const totalFields = responses.length * elements.length;
-            const answeredFields = responses.reduce((total, record) => {
-                const values = record && record.values && typeof record.values === "object" ? record.values : {};
-                return total + elements.reduce((count, _, index) => count + (hasAnswer(values[index]) ? 1 : 0), 0);
-            }, 0);
-
-            responseCount.textContent = responses.length;
-            teamCount.textContent = teams.size;
-            completionRate.textContent = `${totalFields ? Math.round((answeredFields / totalFields) * 100) : 0}%`;
-        } catch {
-            responseCount.textContent = "0";
-            teamCount.textContent = "0";
-            completionRate.textContent = "0%";
+        function setOpen(open) {
+            menu.classList.toggle('open', open);
+            backdrop.classList.toggle('open', open);
+            document.documentElement.classList.toggle('menu-open', open);
+            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            (open ? closeBtn : toggle).focus();
         }
+
+        toggle.addEventListener('click', function () { setOpen(true); });
+        closeBtn.addEventListener('click', function () { setOpen(false); });
+        backdrop.addEventListener('click', function () { setOpen(false); });
+        menu.addEventListener('click', function (e) {
+            if (e.target.closest('a')) setOpen(false);
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (!menu.classList.contains('open')) return;
+            if (e.key === 'Escape') { setOpen(false); return; }
+            if (e.key !== 'Tab') return;
+            var items = menu.querySelectorAll('a, button');
+            var first = items[0], last = items[items.length - 1];
+            if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+            else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        });
+    })();
     </script>
 </body>
 </html>
