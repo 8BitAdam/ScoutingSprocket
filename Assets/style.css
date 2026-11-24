@@ -25,17 +25,17 @@
 	/* Base palette */
 	--color-page: #C08631; /* warm amber page behind the frame */
 	--color-gold: #C9973F; /* card and pill edges */
-	--color-surface: #F0E7CE; /* cream frame */
-	--color-surface-light: #FAF3E0;
-	--color-white: #FFFDF7;
+	--color-surface: #E6DCC6; /* muted cream frame */
+	--color-surface-light: #E9DFC8;
+	--color-white: #E9DFC8;
 
-	/* Menu pills (pale cream, thin gold line) */
-	--color-pill: #FFF7DE;
+	/* Menu pills (muted cream, thin gold line) */
+	--color-pill: #E7D8B8;
 	--color-pill-line: rgba(201, 151, 63, .75);
 
 	/* Text */
 	--color-text: #33372C;
-	--color-text-light: #FFFDF7;
+	--color-text-light: #F1E9D9;
 	--color-h1: #7B3A22;
 	--color-h2: #97492B;
 	--color-h3: #4E6A38;
@@ -81,7 +81,7 @@ html {
 body {
 	background-color: var(--color-page);
 	/* a little light at the top keeps the flat amber from going muddy */
-	background-image: radial-gradient(120% 80% at 50% 0%, #D9A34A 0%, var(--color-page) 60%);
+	background-image: radial-gradient(120% 80% at 50% 0%, #C58F3C 0%, var(--color-page) 60%);
 	margin: 0;
 }
 
@@ -117,7 +117,7 @@ body.nav-open {
 .element {
 	border-radius: var(--radius);
 	/* a translucent cream panel: lighter than the frame instead of a dull wash */
-	background-color: rgba(255, 253, 247, .55);
+	background-color: rgba(233, 223, 200, .55);
 	opacity: 1;
 	border: var(--border-w) solid var(--color-gold);
 	padding: var(--pad);
@@ -1094,7 +1094,7 @@ img {
 
 .chart-plot {
 	height: 200px;
-	background-color: rgba(255, 253, 247, .85);
+	background-color: rgba(233, 223, 200, .85);
 	/* one line per axis band; the JS sets --bands (defaults to 4) */
 	background-image: repeating-linear-gradient(to top, rgba(84, 58, 20, .16) 0 1px, transparent 1px calc(100% / var(--bands, 4)));
 	border-bottom: 2px solid rgba(84, 58, 20, .45);
@@ -1347,7 +1347,7 @@ img {
 	padding: 12px;
 	border: 2px dashed rgba(201, 151, 63, .8);
 	border-radius: 10px;
-	background-color: rgba(255, 253, 247, .5);
+	background-color: rgba(233, 223, 200, .5);
 }
 
 .a11y-preview-label {
@@ -1415,9 +1415,9 @@ html.a11y-contrast {
 	--color-h1: #5C2109;
 	--color-h2: #6E2A0C;
 	--color-h3: #2F4218;
-	--color-surface-light: #FFFFFF;
-	--color-white: #FFFFFF;
-	--color-pill: #FFF9E8;
+	--color-surface-light: #E9E2D3;
+	--color-white: #E9E2D3;
+	--color-pill: #EEE5CC;
 	--color-pill-line: rgba(120, 80, 10, .95);
 }
 
