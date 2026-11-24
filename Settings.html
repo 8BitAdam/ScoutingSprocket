@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Settings</title>
+	<link rel="stylesheet" href="https://8bitadam.github.io/SnorpCSS/css.min/flexi.css">
+	<link rel="stylesheet" href="Assets/style.css">
+	<script src="Assets/a11y.js"></script>
+</head>
+<body>
+	<div class="frame">
+		<header class="topbar">
+			<button type="button" class="nav-btn" id="nav-btn" aria-expanded="false" aria-controls="nav-menu">
+				<span class="nav-btn-label">Menu</span>
+				<span class="nav-icon" aria-hidden="true">
+					<span></span>
+					<span></span>
+					<span></span>
+				</span>
+			</button>
+		</header>
+
+		<main class="settings">
+
+			<div class="data-card">
+				<h2 class="data-card-title">Lock Settings</h2>
+				<div class="data-card-body">
+					<div class="settings-field">
+						<label class="visually-hidden" for="password">Password</label>
+						<input type="password" id="password" placeholder="Password Here" autocomplete="off" spellcheck="false" aria-describedby="password-hint">
+						<p class="settings-state settings-hint" id="password-hint">Prototype password: <strong>sprocket</strong></p>
+					</div>
+
+					<p class="settings-state" id="lock-state" role="status">Locked — reset and clear are disabled.</p>
+
+					<div class="button-row settings-row">
+						<button type="button" class="button" id="lock-btn">Unlock</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="data-card">
+				<h2 class="data-card-title">Accessibility</h2>
+				<div class="data-card-body">
+					<div class="a11y-field">
+						<label class="form-label" for="a11y-font">Reading font</label>
+						<select id="a11y-font">
+							<option value="default">Default</option>
+						</select>
+					</div>
+
+					<div class="a11y-toggles">
+						<label class="picker-row"><span>Wider letter spacing</span><input type="checkbox" id="a11y-spacing"></label>
+						<label class="picker-row"><span>High contrast</span><input type="checkbox" id="a11y-contrast"></label>
+						<label class="picker-row"><span>Reduce motion</span><input type="checkbox" id="a11y-motion"></label>
+					</div>
+
+					<p class="settings-state settings-hint a11y-note" id="a11y-state" role="status">Default reading settings.</p>
+
+					<div class="a11y-preview">
+						<p class="a11y-preview-label">How another page would look</p>
+						<div class="a11y-preview-card">
+							<h3 class="a11y-preview-title">Autonomous</h3>
+							<p class="a11y-preview-question">How many points did the robot score?</p>
+							<div class="a11y-preview-field">Type an answer</div>
+							<div class="a11y-preview-button">Save &amp; move to Teleop</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="data-card">
+				<h2 class="data-card-title">Protected Actions</h2>
+				<div class="data-card-body">
+					<p class="settings-state">These change or delete saved form data, so they stay disabled until the password is entered.</p>
+
+					<div class="button-row">
+						<button type="button" class="button-alert" id="reset-data" data-locked disabled>Reset Data</button>
+						<button type="button" class="button-alert" id="clear-data" data-locked disabled>Clear Data</button>
+					</div>
+				</div>
+			</div>
+
+		</main>
+
+		<div class="nav-backdrop" aria-hidden="true"></div>
+
+		<nav class="nav-menu" id="nav-menu" aria-label="Main menu" inert>
+			<div class="brand">
+				<span class="brand-mark">
+					<img src="sprocket-eye-pie-math.png" alt="" width="46" height="46">
+				</span>
+				<span class="brand-name">
+					<span>Scouting</span>
+					<span>Sprocket</span>
+				</span>
+			</div>
+			<a href="index.html">Home</a>
+			<a href="Forms.html">Forms</a>
+			<a href="Builder.html">Builder</a>
+			<a href="Import.html">Import</a>
+			<a href="Export.html">Export</a>
+			<a href="DataActions.html">Data Actions</a>
+			<a href="Settings.html" class="alert" aria-current="page">Setting</a>
+		</nav>
+	</div>
+
+	<div class="toast-container" role="status" aria-live="polite" id="toasts"></div>
+
+	<script>
+	/* ---------- Navigation ---------- */
+	const navBtn = document.getElementById('nav-btn');
+	const navMenu = document.getElementById('nav-menu');
+	const navBackdrop = document.querySelector('.nav-backdrop');
+
+	function setNav(open) {
+		navBtn.setAttribute('aria-expanded', String(open));
+
+		if (open) {
+			navMenu.inert = false;
+		} else if (navMenu.contains(document.activeElement)) {
+			navBtn.focus({ preventScroll: true });
+		}
+
+		navMenu.classList.toggle('is-open', open);
+		navBackdrop.classList.toggle('is-open', open);
+		document.body.classList.toggle('nav-open', open);
+
+		if (open) {
+			const firstLink = navMenu.querySelector('a');
+			if (firstLink) firstLink.focus({ preventScroll: true });
+		} else {
+			navMenu.inert = true;
+		}
+	}
+
+	navBtn.addEventListener('click', () => {
+		setNav(navBtn.getAttribute('aria-expanded') !== 'true');
+	});
+
+	navBackdrop.addEventListener('click', () => setNav(false));
+
+	navMenu.addEventListener('click', (event) => {
+		if (event.target.closest('a')) setNav(false);
+	});
+
+	document.addEventListener('keydown', (event) => {
+		if (event.key === 'Escape' && navBtn.getAttribute('aria-expanded') === 'true') {
+			setNav(false);
+		}
+	});
+	</script>
+
+	<script src="Assets/settings.js?v=6"></script>
+	<script src="Assets/smoothie.js"></script>
+	<script src="Assets/gears.js"></script>
+</body>
+</html>

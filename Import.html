@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Home</title>
+	<link rel="stylesheet" href="https://8bitadam.github.io/SnorpCSS/css.min/flexi.css">
+	<link rel="stylesheet" href="Assets/style.css">
+	<script src="Assets/a11y.js"></script>
+</head>
+<body>
+	<div class="frame">
+		<header class="topbar">
+			<button type="button" class="nav-btn" id="nav-btn" aria-expanded="false" aria-controls="nav-menu">
+				<span class="nav-btn-label">Menu</span>
+				<span class="nav-icon" aria-hidden="true">
+					<span></span>
+					<span></span>
+					<span></span>
+				</span>
+			</button>
+		</header>
+
+		<div class="element">
+			<div class="head">
+				<h1>Import .token File</h1>
+				<div class="underline"></div>
+				<div class="button-row">
+					<button type="button" class="button" id="load-demo">Upload .token</button>
+					<button type="button" class="button-alert" id="clear-demo">Scan Fountain Codes</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- The browser opens its native file picker. No file data is read. -->
+		<input type="file" id="token-file" accept=".token" hidden>
+
+		<div class="nav-backdrop" aria-hidden="true"></div>
+
+		<nav class="nav-menu" id="nav-menu" aria-label="Main menu" inert>
+			<div class="brand">
+				<span class="brand-mark">
+					<img src="sprocket-eye-pie-math.png" alt="" width="46" height="46">
+				</span>
+				<span class="brand-name">
+					<span>Scouting</span>
+					<span>Sprocket</span>
+				</span>
+			</div>
+			<a href="index.html">Home</a>
+			<a href="Forms.html">Forms</a>
+			<a href="Builder.html">Builder</a>
+			<a href="Import.html">Import</a>
+			<a href="Export.html">Export</a>
+				<a href="DataActions.html">Data Actions</a>
+			<a href="Settings.html" class="alert">Setting</a>
+		</nav>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+	</div>
+
+	<div class="toast-container" role="status" aria-live="polite" id="toasts"></div>
+<script src="Assets/gears.js"></script>
+	<script>
+	/* ---------- Navigation ---------- */
+	const navBtn = document.getElementById('nav-btn');
+	const navMenu = document.getElementById('nav-menu');
+	const navBackdrop = document.querySelector('.nav-backdrop');
+
+	function setNav(open) {
+		navBtn.setAttribute('aria-expanded', String(open));
+
+		if (open) {
+			navMenu.inert = false;
+		} else if (navMenu.contains(document.activeElement)) {
+			navBtn.focus({ preventScroll: true });
+		}
+
+		navMenu.classList.toggle('is-open', open);
+		navBackdrop.classList.toggle('is-open', open);
+		document.body.classList.toggle('nav-open', open);
+
+		if (open) {
+			const firstLink = navMenu.querySelector('a');
+			if (firstLink) firstLink.focus({ preventScroll: true });
+		} else {
+			navMenu.inert = true;
+		}
+	}
+
+	navBtn.addEventListener('click', () => {
+		setNav(navBtn.getAttribute('aria-expanded') !== 'true');
+	});
+
+	navBackdrop.addEventListener('click', () => setNav(false));
+
+	navMenu.addEventListener('click', (event) => {
+		if (event.target.closest('a')) setNav(false);
+	});
+
+	document.addEventListener('keydown', (event) => {
+		if (event.key === 'Escape' && navBtn.getAttribute('aria-expanded') === 'true') {
+			setNav(false);
+		}
+	});
+
+	/* ---------- Browser permission requests ---------- */
+
+	// Upload: open the browser's native file picker, but never read the file.
+	const tokenFile = document.getElementById('token-file');
+
+	document.getElementById('load-demo').addEventListener('click', () => {
+		tokenFile.click();
+	});
+
+	// Camera: request permission, then immediately stop the camera stream.
+	// No video is displayed, captured, stored, or transmitted.
+	document.getElementById('clear-demo').addEventListener('click', async () => {
+		if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+			console.error('Camera access is unavailable. Use HTTPS or localhost.');
+			return;
+		}
+
+		try {
+			const stream = await navigator.mediaDevices.getUserMedia({
+				video: true,
+				audio: false
+			});
+
+			stream.getTracks().forEach(track => track.stop());
+		} catch (error) {
+			console.error('Camera permission was denied or unavailable:', error);
+		}
+	});
+	</script>
+	<script src="Assets/smoothie.js"></script>
+</body>
+</html>

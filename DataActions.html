@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Data Actions</title>
+	<link rel="stylesheet" href="https://8bitadam.github.io/SnorpCSS/css.min/flexi.css">
+	<link rel="stylesheet" href="Assets/style.css">
+	<script src="Assets/a11y.js"></script>
+	<script src="Assets/gears.js"></script>
+</head>
+<body>
+	<div class="frame">
+		<header class="topbar">
+			<button type="button" class="nav-btn" id="nav-btn" aria-expanded="false" aria-controls="nav-menu">
+				<span class="nav-btn-label">Menu</span>
+				<span class="nav-icon" aria-hidden="true">
+					<span></span>
+					<span></span>
+					<span></span>
+				</span>
+			</button>
+		</header>
+
+		<main class="data-actions">
+
+			<div class="data-card">
+				<h2 class="data-card-title">Bar Graph</h2>
+				<div class="data-card-body">
+					<figure class="chart" id="chart">
+						<p class="chart-caption">Points scored by team</p>
+
+						<div class="chart-grid">
+							<div class="chart-axis">
+								<span class="chart-y-title">Number of points</span>
+								<div class="chart-ticks" id="chart-ticks" aria-hidden="true"></div>
+							</div>
+
+							<div class="chart-plot" id="chart-plot">
+								<div class="chart-bars" id="chart-bars"></div>
+							</div>
+
+							<div></div>
+							<div class="chart-x-labels" id="chart-x-labels" aria-hidden="true"></div>
+						</div>
+
+						<p class="chart-x-title">Team name</p>
+						<p class="chart-note">Average per match: auto rating + 2 per Teleop piece + end game bonus (Parked 1, Climbed shallow 3, Climbed deep 5).</p>
+					</figure>
+				</div>
+			</div>
+
+			<div class="data-pair">
+				<div class="data-card">
+					<h2 class="data-card-title">Search Data Type</h2>
+					<div class="data-card-body">
+						<details class="picker">
+							<summary class="picker-summary">Data types</summary>
+							<div class="picker-list">
+								<label class="picker-row"><span>Number</span><input type="checkbox" checked></label>
+								<label class="picker-row"><span>String</span><input type="checkbox"></label>
+								<label class="picker-row"><span>Date</span><input type="checkbox"></label>
+							</div>
+						</details>
+					</div>
+				</div>
+
+				<div class="data-card">
+					<h2 class="data-card-title">Search Questions</h2>
+					<div class="data-card-body">
+						<details class="picker">
+							<summary class="picker-summary">Questions</summary>
+							<div class="picker-list">
+								<label class="picker-row"><span>Team ID</span><input type="checkbox" checked></label>
+								<label class="picker-row"><span>Avg Scored</span><input type="checkbox"></label>
+								<label class="picker-row"><span>comments</span><input type="checkbox"></label>
+							</div>
+						</details>
+					</div>
+				</div>
+			</div>
+
+			<div class="data-card">
+				<h2 class="data-card-title">View Raw Form Data</h2>
+				<div class="data-card-body">
+					<pre class="raw-data" id="raw-data"></pre>
+				</div>
+			</div>
+
+		</main>
+
+		<div class="nav-backdrop" aria-hidden="true"></div>
+
+		<nav class="nav-menu" id="nav-menu" aria-label="Main menu" inert>
+			<div class="brand">
+				<span class="brand-mark">
+					<img src="sprocket-eye-pie-math.png" alt="" width="46" height="46">
+				</span>
+				<span class="brand-name">
+					<span>Scouting</span>
+					<span>Sprocket</span>
+				</span>
+			</div>
+			<a href="index.html">Home</a>
+			<a href="Forms.html">Forms</a>
+			<a href="Builder.html">Builder</a>
+			<a href="Import.html">Import</a>
+			<a href="Export.html">Export</a>
+			<a href="DataActions.html" aria-current="page">Data Actions</a>
+			<a href="Settings.html" class="alert">Setting</a>
+		</nav>
+	</div>
+
+	<div class="toast-container" role="status" aria-live="polite" id="toasts"></div>
+
+	<script>
+	/* ---------- Navigation ---------- */
+	const navBtn = document.getElementById('nav-btn');
+	const navMenu = document.getElementById('nav-menu');
+	const navBackdrop = document.querySelector('.nav-backdrop');
+
+	function setNav(open) {
+		navBtn.setAttribute('aria-expanded', String(open));
+
+		if (open) {
+			navMenu.inert = false;
+		} else if (navMenu.contains(document.activeElement)) {
+			navBtn.focus({ preventScroll: true });
+		}
+
+		navMenu.classList.toggle('is-open', open);
+		navBackdrop.classList.toggle('is-open', open);
+		document.body.classList.toggle('nav-open', open);
+
+		if (open) {
+			const firstLink = navMenu.querySelector('a');
+			if (firstLink) firstLink.focus({ preventScroll: true });
+		} else {
+			navMenu.inert = true;
+		}
+	}
+
+	navBtn.addEventListener('click', () => {
+		setNav(navBtn.getAttribute('aria-expanded') !== 'true');
+	});
+
+	navBackdrop.addEventListener('click', () => setNav(false));
+
+	navMenu.addEventListener('click', (event) => {
+		if (event.target.closest('a')) setNav(false);
+	});
+
+	document.addEventListener('keydown', (event) => {
+		if (event.key === 'Escape' && navBtn.getAttribute('aria-expanded') === 'true') {
+			setNav(false);
+		}
+	});
+	</script>
+
+	<script src="Assets/data-actions.js"></script>
+	<script src="Assets/smoothie.js"></script>
+</body>
+</html>

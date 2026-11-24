@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Forms</title>
+	<link rel="stylesheet" href="https://8bitadam.github.io/SnorpCSS/css.min/flexi.css">
+	<link rel="stylesheet" href="Assets/style.css">
+	<script src="Assets/a11y.js"></script>
+</head>
+<body>
+	<div class="frame">
+		<header class="topbar">
+			<button type="button" class="nav-btn" id="nav-btn" aria-expanded="false" aria-controls="nav-menu">
+				<span class="nav-btn-label">Menu</span>
+				<span class="nav-icon" aria-hidden="true">
+					<span></span>
+					<span></span>
+					<span></span>
+				</span>
+			</button>
+		</header>
+
+		<main class="forms">
+
+			<div class="section-tabs" id="form-tabs" role="tablist" aria-label="Form sections"></div>
+
+			<section class="element form-card" id="form-panel" role="tabpanel" aria-label="Form">
+				<div class="head">
+					<div class="form-fields" id="form-fields"></div>
+				</div>
+			</section>
+
+			<div class="button-row">
+				<button type="button" class="button" id="save-next">Save Form</button>
+			</div>
+
+		</main>
+
+		<div class="nav-backdrop" aria-hidden="true"></div>
+
+		<nav class="nav-menu" id="nav-menu" aria-label="Main menu" inert>
+			<div class="brand">
+				<span class="brand-mark">
+					<img src="sprocket-eye-pie-math.png" alt="" width="46" height="46">
+				</span>
+				<span class="brand-name">
+					<span>Scouting</span>
+					<span>Sprocket</span>
+				</span>
+			</div>
+			<a href="index.html">Home</a>
+			<a href="Forms.html" aria-current="page">Forms</a>
+			<a href="Builder.html">Builder</a>
+			<a href="Import.html">Import</a>
+			<a href="Export.html">Export</a>
+				<a href="DataActions.html">Data Actions</a>
+			<a href="Settings.html" class="alert">Setting</a>
+		</nav>
+	</div>
+
+	<div class="toast-container" role="status" aria-live="polite" id="toasts"></div>
+
+	<script>
+	/* ---------- Navigation ---------- */
+	const navBtn = document.getElementById('nav-btn');
+	const navMenu = document.getElementById('nav-menu');
+	const navBackdrop = document.querySelector('.nav-backdrop');
+
+	function setNav(open) {
+		navBtn.setAttribute('aria-expanded', String(open));
+
+		// opening: links become focusable before focus moves into the drawer.
+		// closing: hand focus back to the button first, then make the drawer inert
+		// so its links stay unfocusable while it plays its exit animation.
+		if (open) {
+			navMenu.inert = false;
+		} else if (navMenu.contains(document.activeElement)) {
+			navBtn.focus({ preventScroll: true });
+		}
+
+		navMenu.classList.toggle('is-open', open);
+		navBackdrop.classList.toggle('is-open', open);
+		document.body.classList.toggle('nav-open', open);
+
+		if (open) {
+			const firstLink = navMenu.querySelector('a');
+			if (firstLink) firstLink.focus({ preventScroll: true });
+		} else {
+			navMenu.inert = true;
+		}
+	}
+
+	navBtn.addEventListener('click', () => {
+		setNav(navBtn.getAttribute('aria-expanded') !== 'true');
+	});
+
+	navBackdrop.addEventListener('click', () => setNav(false));
+
+	navMenu.addEventListener('click', (event) => {
+		if (event.target.closest('a')) setNav(false);
+	});
+
+	document.addEventListener('keydown', (event) => {
+		if (event.key === 'Escape' && navBtn.getAttribute('aria-expanded') === 'true') {
+			setNav(false);
+		}
+	});
+	</script>
+
+	<script src="Assets/forms.js"></script>
+	<script src="Assets/smoothie.js"></script>
+	<script src="Assets/gears.js"></script>
+</body>
+</html>

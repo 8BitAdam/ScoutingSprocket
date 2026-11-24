@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Builder</title>
+	<link rel="stylesheet" href="https://8bitadam.github.io/SnorpCSS/css.min/flexi.css">
+	<link rel="stylesheet" href="Assets/style.css">
+	<script src="Assets/a11y.js"></script>
+	<script src="Assets/gears.js"></script>
+</head>
+<body>
+	<div class="frame">
+		<header class="topbar">
+			<button type="button" class="nav-btn" id="nav-btn" aria-expanded="false" aria-controls="nav-menu">
+				<span class="nav-btn-label">Menu</span>
+				<span class="nav-icon" aria-hidden="true">
+					<span></span>
+					<span></span>
+					<span></span>
+				</span>
+			</button>
+		</header>
+
+		<main class="builder">
+
+			<div class="element">
+				<div class="head">
+					<h1>Sections</h1>
+					<div class="underline"></div>
+
+					<ul class="section-list" id="section-list"></ul>
+					<p class="empty-note" id="section-empty">No sections yet. Add one below.</p>
+
+					<form class="stack" id="section-form" novalidate>
+						<label class="visually-hidden" for="section-name">Section name</label>
+						<input type="text" id="section-name" name="section-name" placeholder="Enter A section Name" autocomplete="off" maxlength="40">
+						<div class="button-row">
+							<button type="submit" class="button">Add a Section</button>
+						</div>
+					</form>
+				</div>
+			</div>
+
+			<div class="section-tabs" id="section-tabs" role="tablist" aria-label="Sections"></div>
+
+			<div class="element" id="elements-panel" role="tabpanel">
+				<div class="head">
+					<h1><span id="elements-title-name">Autos</span> Elements</h1>
+					<div class="underline"></div>
+
+					<ul class="element-list" id="element-list"></ul>
+					<p class="empty-note" id="element-empty">No elements yet. Add one below.</p>
+				</div>
+			</div>
+
+			<div class="element">
+				<div class="head">
+					<h1>Add a Form Element</h1>
+					<div class="underline"></div>
+
+					<form class="stack" id="element-form" novalidate>
+						<div class="field-row">
+							<div class="field">
+								<label class="visually-hidden" for="element-kind">Element</label>
+								<select id="element-kind" name="element-kind" required>
+									<option value="" selected disabled>Element</option>
+									<option value="Short Text">Short Text</option>
+									<option value="Long Text">Long Text</option>
+									<option value="Drop">Drop</option>
+									<option value="Checkbox">Checkbox</option>
+									<option value="Slider">Slider</option>
+								</select>
+							</div>
+							<div class="field">
+								<label class="visually-hidden" for="data-type">Data Type</label>
+								<select id="data-type" name="data-type" required>
+									<option value="" selected disabled>Data Type</option>
+									<option value="Text">Text</option>
+									<option value="Number">Number</option>
+									<option value="Bool">Bool</option>
+									<option value="Choice">Choice</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="field">
+							<label class="visually-hidden" for="question-name">Question name</label>
+							<input type="text" id="question-name" name="question-name" placeholder="Question Name" autocomplete="off" maxlength="60">
+						</div>
+
+						<div class="field">
+							<label class="visually-hidden" for="question-hint">Question hint</label>
+							<input type="text" id="question-hint" name="question-hint" placeholder="Question Hint" autocomplete="off" maxlength="80">
+						</div>
+
+						<div class="button-row">
+							<button type="submit" class="button" id="add-element">Add Element</button>
+						</div>
+					</form>
+				</div>
+			</div>
+
+		</main>
+
+		<div class="nav-backdrop" aria-hidden="true"></div>
+
+		<nav class="nav-menu" id="nav-menu" aria-label="Main menu" inert>
+			<div class="brand">
+				<span class="brand-mark">
+					<img src="sprocket-eye-pie-math.png" alt="" width="46" height="46">
+				</span>
+				<span class="brand-name">
+					<span>Scouting</span>
+					<span>Sprocket</span>
+				</span>
+			</div>
+			<a href="index.html">Home</a>
+			<a href="Forms.html">Forms</a>
+			<a href="Builder.html" aria-current="page">Builder</a>
+			<a href="Import.html">Import</a>
+			<a href="Export.html">Export</a>
+				<a href="DataActions.html">Data Actions</a>
+			<a href="Settings.html" class="alert">Setting</a>
+		</nav>
+	</div>
+
+	<div class="toast-container" role="status" aria-live="polite" id="toasts"></div>
+
+	<script>
+	/* ---------- Navigation ---------- */
+	const navBtn = document.getElementById('nav-btn');
+	const navMenu = document.getElementById('nav-menu');
+	const navBackdrop = document.querySelector('.nav-backdrop');
+
+	function setNav(open) {
+		navBtn.setAttribute('aria-expanded', String(open));
+
+		// opening: links become focusable before focus moves into the drawer.
+		// closing: hand focus back to the button first, then make the drawer inert
+		// so its links stay unfocusable while it plays its exit animation.
+		if (open) {
+			navMenu.inert = false;
+		} else if (navMenu.contains(document.activeElement)) {
+			navBtn.focus({ preventScroll: true });
+		}
+
+		navMenu.classList.toggle('is-open', open);
+		navBackdrop.classList.toggle('is-open', open);
+		document.body.classList.toggle('nav-open', open);
+
+		if (open) {
+			const firstLink = navMenu.querySelector('a');
+			if (firstLink) firstLink.focus({ preventScroll: true });
+		} else {
+			navMenu.inert = true;
+		}
+	}
+
+	navBtn.addEventListener('click', () => {
+		setNav(navBtn.getAttribute('aria-expanded') !== 'true');
+	});
+
+	navBackdrop.addEventListener('click', () => setNav(false));
+
+	navMenu.addEventListener('click', (event) => {
+		if (event.target.closest('a')) setNav(false);
+	});
+
+	document.addEventListener('keydown', (event) => {
+		if (event.key === 'Escape' && navBtn.getAttribute('aria-expanded') === 'true') {
+			setNav(false);
+		}
+	});
+	</script>
+
+	<script src="Assets/builder.js"></script>
+	<script src="Assets/smoothie.js"></script>
+</body>
+</html>

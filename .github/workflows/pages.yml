@@ -3,6 +3,7 @@ name: Deploy static site to GitHub Pages
 on:
   push:
     branches:
+      - VisualDemo
       - main
       - master
   workflow_dispatch:
